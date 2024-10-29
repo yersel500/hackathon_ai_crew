@@ -31,8 +31,10 @@ def create_app():
     # Importar y registrar blueprints
     from .routes.user_routes import user_routes
     from .routes.map_routes import map_routes
+    from .routes.chat_routes import chat_routes
     
     app.register_blueprint(user_routes)
     app.register_blueprint(map_routes)
+    app.register_blueprint(chat_routes)
 
     return app

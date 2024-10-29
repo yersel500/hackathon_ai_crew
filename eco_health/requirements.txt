@@ -5,3 +5,4 @@ azure-cosmos
 openai
 python-dotenv
 folium
+dotenv

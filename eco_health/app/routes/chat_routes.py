@@ -1,33 +1,75 @@
 # app/routes/chat_routes.py
 from flask import Blueprint, request, jsonify
-from ..services.openai_service import ChatService
-from ..services.pollution_service import PollutionService
-from ..models.user import User
+from ..routes.user_routes import token_required
+import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 chat_routes = Blueprint('chat_routes', __name__)
-chat_service = ChatService()
-user_model = User()
 
-@chat_routes.route('/api/chat/health-advice', methods=['POST'])
-def get_health_advice():
+# Configuration
+API_KEY = os.getenv('AZURE_OPENAI_KEY')
+ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
+
+@chat_routes.route('/api/chat', methods=['POST'])
+@token_required
+def chat(current_user):
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
-        location = data.get('location')
+        user_message = data.get('message')
         
-        # Obtener información del usuario
-        user = user_model.get_user(user_id)
-        
-        # Obtener datos de contaminación
-        pollution_service = PollutionService()
-        pollution_data = pollution_service.get_city_pollution(location)
-        
-        # Obtener recomendaciones
-        recommendations = chat_service.get_health_recommendations(
-            user['medical_conditions'],
-            pollution_data
-        )
-        
-        return jsonify({"recommendations": recommendations})
+        if not user_message:
+            return jsonify({'error': 'No message provided'}), 400
+
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": API_KEY,
+        }
+
+        # Create payload with user context
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f"""You are an AI assistant specialized in environmental health. 
+                            The user has the following medical conditions: {current_user.get('medical_conditions', [])}
+                            Location: {current_user.get('location', 'Unknown')}
+                            Provide personalized advice considering their medical conditions and location."""
+                        }
+                    ]
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": user_message
+                        }
+                    ]
+                }
+            ],
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "max_tokens": 800
+        }
+
+        try:
+            response = requests.post(ENDPOINT, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            # Extract the assistant's response from the API response
+            ai_response = response.json()['choices'][0]['message']['content']
+            return jsonify({'response': ai_response})
+            
+        except requests.RequestException as e:
+            print(f"API request failed: {e}")
+            return jsonify({'error': 'Failed to get response from AI service'}), 500
+
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error in chat: {e}")
+        return jsonify({'error': str(e)}), 500
