@@ -1,0 +1,83 @@
+<!-- app/templates/auth/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoHealth - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-green-600">EcoHealth</a>
+            <div>
+                {% if current_user %}
+                    <a href="/map" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
+                    <a href="/profile" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
+                    <button onclick="logout()" class="text-gray-600 hover:text-green-600">Cerrar Sesión</button>
+                {% else %}
+                    <a href="/login" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
+                    <a href="/register" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto py-8">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+
+    <!-- Script global para manejo de sesión -->
+    <script>
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+  
+      // Verificar token en cada página
+    //   document.addEventListener('DOMContentLoaded', async () => {
+    //       const token = localStorage.getItem('token');
+    //       const protectedPaths = ['/profile', '/map'];
+    //       const currentPath = window.location.pathname;
+  
+    //       if (protectedPaths.includes(currentPath) && !token) {
+    //           // Redirigir a login si no hay token en páginas protegidas
+    //           window.location.href = '/login';
+    //           return;
+    //       }
+  
+    //       if (token) {
+    //           try {
+    //               // Verificar si el token es válido
+    //               const response = await fetch('/api/user/profile', {
+    //                   headers: {
+    //                       'Authorization': `Bearer ${token}`
+    //                   }
+    //               });
+  
+    //               if (!response.ok) {
+    //                   // Si el token no es válido, limpiar y redirigir
+    //                   localStorage.removeItem('token');
+    //                   if (protectedPaths.includes(currentPath)) {
+    //                       window.location.href = '/login';
+    //                   }
+    //               }
+    //           } catch (error) {
+    //               console.error('Error verificando token:', error);
+    //           }
+    //       }
+    //   });
+      </script>
+</body>
+</html>
