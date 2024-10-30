@@ -1,8 +1,26 @@
-<!-- app/templates/map.html -->
-{% extends "auth/base.html" %}
+{% extends 'auth/base.html' %}
 
-{% block title %}Mapa de Contaminación{% endblock %}
+{% block title %}Maps{% endblock %}
 
 {% block content %}
-    {{ map_html|safe }}
+<div class="flex flex-wrap -mx-2">
+    <div class="w-full md:w-1/2 px-2">
+        <h1 class="text-xl font-bold mb-4">Mapa Global</h1>
+        <div class="bg-white p-4 rounded shadow">
+            {{ map1_html|safe }}
+        </div>
+    </div>
+    <div class="w-full md:w-1/2 px-2">
+        <h1 class="text-xl font-bold mb-4">Mapa Ubicacion Actual</h1>
+        <div class="bg-white p-4 rounded shadow">
+            {{ map2_html|safe }}
+        </div>
+    </div>
+</div>
+<div>
+    <h1 class="text-xl font-bold my-4">Forecast para {{name}}</h1>
+    <div class="bg-white p-4 rounded shadow">
+        {{ forecast_table|safe }}
+    </div>
+</div>
 {% endblock %}
