@@ -117,11 +117,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-09-01' existing 
   name: storageAccountName
 }
 
-resource virtualMachine 'Microsoft.Compute/virtualMachines@2021-11-01' = {
+resource virtualMachine 'Microsoft.Compute/virtualMachines@2024-07-01' = {
   name: vmName
   location: location
   tags: tags
+  
   properties: {
+    priority: 'Spot'  // Añadir esta línea para activar el modo Spot
+    billingProfile: {
+      maxPrice: json('.1')
+    }
     hardwareProfile: {
       vmSize: vmSize
     }

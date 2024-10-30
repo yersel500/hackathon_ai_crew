@@ -400,6 +400,7 @@ param tags object = {}
 @description('Specifies the object id of a Microsoft Entra ID user. In general, this the object id of the system administrator who deploys the Azure resources.')
 param userObjectId string = ''
 
+
 // Resources
 module workspace 'modules/logAnalytics.bicep' = {
   name: 'workspace'

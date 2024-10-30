@@ -1,7 +1,7 @@
 using './main.bicep'
 
-param prefix = 'bami6'
-param suffix = 'test6'
+param prefix = 'zai4'
+param suffix = 'zat4'
 param userObjectId = 'fba16f87-9491-4997-95bf-4f4d8621a457'
 param keyVaultEnablePurgeProtection = false
 param acrEnabled = true
