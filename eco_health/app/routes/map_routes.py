@@ -52,15 +52,15 @@ def show_map(current_user):
             return "Error creating the map", 500
         print("Map created successfully")
 
-        # Create the second map
-        map2 = map_service.local_pollution_map()
+        # Create the second map and forecast table
+        map2, forecast_table, name = map_service.local_pollution_map()
         if not map2:
             print("Error creating second map")
             return "Error creating the second map", 500
         print("Second map created successfully")
-
+        
         print("--- Exiting show_map function ---\n")
-        return render_template('map.html', map1_html=map1._repr_html_(), map2_html=map2._repr_html_())
+        return render_template('map.html', map1_html=map1._repr_html_(), map2_html=map2._repr_html_(), forecast_table=forecast_table, name=name)
     except Exception as e:
         print(f"Error in show_map: {str(e)}")
         return str(e), 500

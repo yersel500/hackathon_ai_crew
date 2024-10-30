@@ -129,6 +129,7 @@ class MapService:
         lat = pollution_data['city']['geo'][0]
         lon = pollution_data['city']['geo'][1]
         aqi = pollution_data['aqi']
+        forecast = pollution_data['forecast']
 
         # Crear mapa base
         m = folium.Map(
@@ -178,7 +179,47 @@ class MapService:
             circle.add_to(m)
         
         
-        return m
+            # Crear tabla de pronóstico
+            forecast_table = self._create_forecast_table(forecast)
+
+        return m, forecast_table, name
+
+
+    def _create_forecast_table(self, forecast):
+        """Crear tabla HTML para el pronóstico"""
+        table_html = """
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2">Fecha</th>
+                    <th class="py-2">Parámetro</th>
+                    <th class="py-2">Mínimo</th>
+                    <th class="py-2">Máximo</th>
+                    <th class="py-2">Promedio</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+
+        for parameter, values in forecast['daily'].items():
+            for entry in values:
+                table_html += f"""
+                <tr>
+                    <td class="border px-4 py-2">{entry['day']}</td>
+                    <td class="border px-4 py-2">{parameter}</td>
+                    <td class="border px-4 py-2">{entry['min']}</td>
+                    <td class="border px-4 py-2">{entry['max']}</td>
+                    <td class="border px-4 py-2">{entry['avg']}</td>
+                </tr>
+                """
+
+        table_html += """
+            </tbody>
+        </table>
+        """
+
+        return table_html
+    
 
     def _get_color_by_aqi(self, aqi):
         """Determinar color basado en AQI"""

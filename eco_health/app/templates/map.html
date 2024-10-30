@@ -17,4 +17,10 @@
         </div>
     </div>
 </div>
+<div>
+    <h1 class="text-xl font-bold my-4">Forecast para {{name}}</h1>
+    <div class="bg-white p-4 rounded shadow">
+        {{ forecast_table|safe }}
+    </div>
+</div>
 {% endblock %}
