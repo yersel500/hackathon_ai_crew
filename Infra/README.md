@@ -23,5 +23,6 @@ Run the following command to deploy the resources:
 
 ```bash
 ./deploy.sh --resourceGroupName <resource-group-name> --location <location> --virtualNetworkResourceGroupName <client-virtual-network-resource-group-name>
+./deploy.sh --resourceGroupName azureservices4 --location canadaeast --virtualNetworkResourceGroupName vnetgroup4
 ```
 
