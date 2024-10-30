@@ -188,14 +188,14 @@ class MapService:
     def _create_forecast_table(self, forecast):
         """Crear tabla HTML para el pronóstico"""
         table_html = """
-        <table class="min-w-full bg-white">
-            <thead>
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                    <th class="py-2">Fecha</th>
-                    <th class="py-2">Parámetro</th>
-                    <th class="py-2">Mínimo</th>
-                    <th class="py-2">Máximo</th>
-                    <th class="py-2">Promedio</th>
+                    <th class="px-6 py-3">Fecha</th>
+                    <th class="px-6 py-3">Parámetro</th>
+                    <th class="px-6 py-3">Mínimo</th>
+                    <th class="px-6 py-3">Máximo</th>
+                    <th class="px-6 py-3">Promedio</th>
                 </tr>
             </thead>
             <tbody>
@@ -204,12 +204,12 @@ class MapService:
         for parameter, values in forecast['daily'].items():
             for entry in values:
                 table_html += f"""
-                <tr>
-                    <td class="border px-4 py-2">{entry['day']}</td>
-                    <td class="border px-4 py-2">{parameter}</td>
-                    <td class="border px-4 py-2">{entry['min']}</td>
-                    <td class="border px-4 py-2">{entry['max']}</td>
-                    <td class="border px-4 py-2">{entry['avg']}</td>
+                <tr class="odd:bg-white even:bg-gray-50 border-b">
+                    <th scope="col" class="px-6 py-3">{entry['day']}</th>
+                    <td class="px-6 py-2">{parameter}</td>
+                    <td class="px-6 py-2">{entry['min']}</td>
+                    <td class="px-6 py-2">{entry['max']}</td>
+                    <td class="px-6 py-2">{entry['avg']}</td>
                 </tr>
                 """
 
