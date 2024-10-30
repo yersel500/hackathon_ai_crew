@@ -68,3 +68,34 @@ class PollutionService:
                 pollution_data[state] = data
         print("Pollution data for all states:", pollution_data)
         return pollution_data
+    
+    def get_all_station_pollution_in_mexico(self) -> Dict[str, Any]:
+        """Obtiene datos de contaminación para un estado específico"""
+        try:           
+            url = "https://api.waqi.info/v2/map/bounds?latlng=14.538828,-118.364896,32.718655,-86.710288&networks=all&token=aa2f064b4d63a6ddaa773654545e19e1884daa1e"
+            response = requests.get(url)
+            data = response.json()
+            print("Data:", data)
+
+            if data.get('status') == 'ok':
+                return data['data']
+            return None
+        except Exception as e:
+            print(f"Error getting pollution data: {e}")
+            return None
+        
+
+    def get_local_pollution(self) -> Dict[str, Any]:
+        """Obtiene datos de contaminación para un estado específico"""
+        try:           
+            url = "https://api.waqi.info/feed/here/?token=aa2f064b4d63a6ddaa773654545e19e1884daa1e"
+            response = requests.get(url)
+            data = response.json()
+            print("Data:", data)
+
+            if data.get('status') == 'ok':
+                return data['data']
+            return None
+        except Exception as e:
+            print(f"Error getting local pollution data {e}")
+            return None
