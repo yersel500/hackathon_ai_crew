@@ -1,0 +1,198 @@
+<!-- app/templates/auth/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoHealth - {% block title %}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-green-600">EcoHealth</a>
+            <div>
+                {% if current_user %}
+                    <a href="/map" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
+                    <a href="/profile" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
+                    <button onclick="logout()" class="text-gray-600 hover:text-green-600">Cerrar Sesión</button>
+                {% else %}
+                    <a href="/login" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
+                    <a href="/register" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto py-8">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+
+    <div id="chatbot-container" class="fixed bottom-4 right-4 z-50">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" class="bg-green-600 text-white rounded-full p-4 shadow-lg hover:bg-green-700 focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-4l-4 4z" />
+            </svg>
+        </button>
+    
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[500px] bg-white rounded-lg shadow-xl flex flex-col">
+            <!-- Chat Header -->
+            <div class="bg-green-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
+                <h3 class="font-bold">EcoHealth Assistant</h3>
+                <button id="chat-close" class="hover:text-gray-300 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+    
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Messages will be inserted here -->
+                <div class="flex items-start mb-4">
+                    <div class="bg-green-100 rounded-lg py-2 px-4 max-w-[80%]">
+                        <p class="text-sm">¡Hola! Soy tu asistente de EcoHealth. ¿En qué puedo ayudarte hoy?</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Chat Input -->
+            <div class="border-t p-4">
+                <form id="chat-form" class="flex items-center space-x-2">
+                    <input type="text" id="chat-input" 
+                        class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:border-green-500"
+                        placeholder="Escribe tu mensaje...">
+                    <button type="submit" 
+                        class="bg-green-600 text-white rounded-lg px-4 py-2 hover:bg-green-700 focus:outline-none">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script global para manejo de sesión -->
+    <script>
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+  
+      // Verificar token en cada página
+    //   document.addEventListener('DOMContentLoaded', async () => {
+    //       const token = localStorage.getItem('token');
+    //       const protectedPaths = ['/profile', '/map'];
+    //       const currentPath = window.location.pathname;
+  
+    //       if (protectedPaths.includes(currentPath) && !token) {
+    //           // Redirigir a login si no hay token en páginas protegidas
+    //           window.location.href = '/login';
+    //           return;
+    //       }
+  
+    //       if (token) {
+    //           try {
+    //               // Verificar si el token es válido
+    //               const response = await fetch('/api/user/profile', {
+    //                   headers: {
+    //                       'Authorization': `Bearer ${token}`
+    //                   }
+    //               });
+  
+    //               if (!response.ok) {
+    //                   // Si el token no es válido, limpiar y redirigir
+    //                   localStorage.removeItem('token');
+    //                   if (protectedPaths.includes(currentPath)) {
+    //                       window.location.href = '/login';
+    //                   }
+    //               }
+    //           } catch (error) {
+    //               console.error('Error verificando token:', error);
+    //           }
+    //       }
+    //   });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const chatClose = document.getElementById('chat-close');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Toggle chat window
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.remove('hidden');
+            chatToggle.classList.add('hidden');
+        });
+
+        // Close chat window
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.add('hidden');
+            chatToggle.classList.remove('hidden');
+        });
+
+        // Handle message submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, true);
+            chatInput.value = '';
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    addMessage('Por favor, inicia sesión para continuar.', false);
+                    return;
+                }
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                addMessage(data.response, false);
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Lo siento, hubo un error al procesar tu mensaje.', false);
+            }
+        });
+
+        // Function to add message to chat
+        function addMessage(message, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex items-start mb-4 ${isUser ? 'justify-end' : ''}`;
+            
+            msgDiv.innerHTML = `
+                <div class="${isUser ? 'bg-blue-100' : 'bg-green-100'} rounded-lg py-2 px-4 max-w-[80%]">
+                    <p class="text-sm">${message}</p>
+                </div>
+            `;
+            
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+    </script>
+</body>
+</html>

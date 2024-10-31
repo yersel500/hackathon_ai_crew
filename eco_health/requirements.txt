@@ -1,0 +1,8 @@
+flask
+flask-cors
+requests
+azure-cosmos
+openai
+python-dotenv
+folium
+pyjwt
