@@ -1,6 +1,7 @@
 # app/routes/chat_routes.py
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
+from ..services.pollution_service import PollutionService
 import requests
 import os
 from dotenv import load_dotenv
@@ -28,6 +29,8 @@ def chat():
             "api-key": API_KEY,
         }
 
+        pollution_data = PollutionService().get_local_pollution()
+
         # Create payload with user context
         payload = {
             "messages": [
@@ -36,10 +39,27 @@ def chat():
                     "content": [
                         {
                             "type": "text",
-                            "text": f"""You are an AI assistant specialized in environmental health. 
-                            The user has the following medical conditions: {current_user.medical_condition}
-                            Location: {current_user.location}
-                            Provide personalized advice considering their medical conditions and location."""
+                            "text": f"""You are an expert health advisor specialized in environmental health and air quality impacts. Your role is to provide personalized health recommendations based on individual medical conditions and current air quality data.
+
+                            Medical Profile:
+                            - Conditions: {current_user.medical_condition}
+                            - Location: {current_user.location}
+
+                            Current Air Quality Metrics:
+                            {pollution_data}
+
+                            Instructions:
+                            1. Analyze the air quality data and its potential impact on the user's specific medical conditions
+                            2. Provide personalized health recommendations, including:
+                            - Immediate precautions if needed
+                            - Safe outdoor activity recommendations
+                            - Indoor air quality tips
+                            - Warning signs to watch for
+                            - When to seek medical attention
+                            3. Explain briefly how the current air quality might affect their specific conditions
+                            4. Suggest preventive measures relevant to their medical profile
+
+                            Keep responses concise, practical, and focused on the user's specific health conditions and current air quality situation."""
                         }
                     ]
                 },

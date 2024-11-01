@@ -17,6 +17,8 @@ def register():
             age = request.form.get('age')
             location = request.form.get('location')
             medical_condition = request.form.getlist('medical_condition')
+            latitude = request.form.get('latitude')
+            longitude = request.form.get('longitude')
             
             print("\n=== Registration Attempt ===")
             print(f"Email: {email}")
@@ -52,7 +54,9 @@ def register():
                     name=name,
                     age=int(age) if age else None,
                     location=location,
-                    medical_condition=','.join(medical_condition) if medical_condition else None
+                    medical_condition=','.join(medical_condition) if medical_condition else None,
+                    latitude=float(latitude) if latitude else None,
+                    longitude=float(longitude) if longitude else None
                 )
                 new_user.set_password(password)
                 print("User object created successfully")

@@ -14,6 +14,8 @@ class User(UserMixin, db.Model):
     age = db.Column(db.Integer)
     location = db.Column(db.String(120))
     medical_condition = db.Column(db.String(500))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
