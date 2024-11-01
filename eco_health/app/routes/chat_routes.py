@@ -94,12 +94,20 @@ def chat():
             ai_response = response.json()['choices'][0]['message']['content']
             output_tokens = count_tokens(ai_response)
 
+            session['total_input_tokens'] = session.get('total_input_tokens', 0) + input_tokens
+            session['total_output_tokens'] = session.get('total_output_tokens', 0) + output_tokens            
+
             return jsonify({
                 'response': ai_response,
                 'tokens': {
                     'input': input_tokens,
                     'output': output_tokens,
-                    'total': input_tokens + output_tokens
+                    'total': input_tokens + output_tokens,
+                    'session_total': {
+                        'input': session['total_input_tokens'],
+                        'output': session['total_output_tokens'],
+                        'total': session['total_input_tokens'] + session['total_output_tokens']
+                    }
                 }
             })
             
@@ -110,3 +118,10 @@ def chat():
     except Exception as e:
         print(f"Error in chat: {e}")
         return jsonify({'error': str(e)}), 500
+    
+@chat_routes.route('/api/chat/reset-tokens', methods=['POST'])
+@login_required
+def reset_tokens():
+    session['total_input_tokens'] = 0
+    session['total_output_tokens'] = 0
+    return jsonify({'status': 'success'})

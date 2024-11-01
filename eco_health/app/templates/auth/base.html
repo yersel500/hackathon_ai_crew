@@ -117,7 +117,7 @@
         </button>
     
         <!-- Chat Window -->
-        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[600px] bg-white rounded-lg shadow-xl flex flex-col">
+        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[650px] bg-white rounded-lg shadow-xl flex flex-col">
             <!-- Chat Header -->
             <div class="bg-green-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
                 <h3 class="font-bold">EcoHealth Assistant</h3>
@@ -139,11 +139,31 @@
             </div>
 
             <div id="token-counter" class="text-xs text-gray-500 px-4 py-2 border-t">
-                <div class="flex justify-between">
-                    <span>Tokens entrada: <span id="input-tokens">0</span></span>
-                    <span>Tokens salida: <span id="output-tokens">0</span></span>
-                    <span>Total: <span id="total-tokens">0</span></span>
+                <div class="flex flex-col space-y-2">
+                    <!-- Mensaje actual -->
+                    <div>
+                        <div class="font-semibold mb-1">Mensaje actual:</div>
+                        <div class="flex justify-between">
+                            <span>Entrada: <span id="input-tokens">0</span></span>
+                            <span>Salida: <span id="output-tokens">0</span></span>
+                            <span>Total: <span id="total-tokens">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total sesión -->
+                    <div>
+                        <div class="font-semibold mb-1">Total sesión:</div>
+                        <div class="flex justify-between">
+                            <span>Entrada: <span id="session-input-tokens">0</span></span>
+                            <span>Salida: <span id="session-output-tokens">0</span></span>
+                            <span>Total: <span id="session-total-tokens">0</span></span>
+                        </div>
+                    </div>
                 </div>
+                <button id="reset-tokens" 
+                    class="mt-2 text-xs text-gray-500 hover:text-gray-700 underline">
+                    Reiniciar contadores
+                </button>
             </div>
     
             <!-- Chat Input -->
@@ -223,17 +243,40 @@
             });
 
             function updateTokenCounters(tokens) {
+                // Actualizar contadores del mensaje actual
                 document.getElementById('input-tokens').textContent = tokens.input;
                 document.getElementById('output-tokens').textContent = tokens.output;
                 document.getElementById('total-tokens').textContent = tokens.total;
                 
-                // Opcional: Agregar una pequeña animación al actualizar
+                // Actualizar contadores de la sesión
+                if (tokens.session_total) {
+                    document.getElementById('session-input-tokens').textContent = tokens.session_total.input;
+                    document.getElementById('session-output-tokens').textContent = tokens.session_total.output;
+                    document.getElementById('session-total-tokens').textContent = tokens.session_total.total;
+                }
+                
+                // Opcional: Animación al actualizar
                 const counters = document.querySelectorAll('#token-counter span span');
                 counters.forEach(counter => {
                     counter.classList.add('token-update');
                     setTimeout(() => counter.classList.remove('token-update'), 300);
                 });
-            }            
+            }
+            
+
+            document.getElementById('reset-tokens').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/chat/reset-tokens', { method: 'POST' });
+                    if (response.ok) {
+                        // Resetear todos los contadores a 0
+                        document.querySelectorAll('#token-counter span span').forEach(counter => {
+                            counter.textContent = '0';
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error resetting tokens:', error);
+                }
+            });
     
             // Function to add message to chat
             function addMessage(message, isUser, isError = false) {
