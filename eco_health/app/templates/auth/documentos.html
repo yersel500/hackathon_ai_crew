@@ -69,7 +69,10 @@
                     {% if decrypted_content %}
                         <pre class="whitespace-pre-wrap">{{ decrypted_content }}</pre>
                     {% else %}
-                        <p class="text-gray-500 italic">Error al recuperar el contenido</p>
+                        <div class="p-4 text-center">
+                            <p class="text-gray-500 italic">No se pudo recuperar el contenido del documento</p>
+                            <p class="text-sm text-gray-400">Esto puede deberse a un error en la desencriptación o contenido no disponible</p>
+                        </div>
                     {% endif %}
                 </div>
             </div>

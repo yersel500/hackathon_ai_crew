@@ -24,7 +24,12 @@ def count_tokens(text: str) -> int:
 def get_user_documents_content(user_id):
     """Get processed content from user's documents"""
     documents = Document.query.filter_by(user_id=user_id).all()
-    return [doc.get_content() for doc in documents]
+    documents_content = []
+    for doc in documents:
+        content = doc.get_content()
+        if content:
+            documents_content.append(f"Document '{doc.filename}':\n{content}")
+    return documents_content
 
 @chat_routes.route('/api/chat', methods=['POST'])
 @login_required
