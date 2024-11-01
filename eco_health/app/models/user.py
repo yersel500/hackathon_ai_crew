@@ -15,6 +15,8 @@ class User(UserMixin, db.Model):
     medical_condition = db.Column(db.String(500))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
+    privacy_accepted = db.Column(db.Boolean, default=False)
+    privacy_accepted_at = db.Column(db.DateTime)
     documents = db.relationship('Document', backref='user', lazy=True)
     
     def set_password(self, password):
