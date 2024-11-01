@@ -61,6 +61,27 @@
             border-radius: 0.25rem;
             font-family: monospace;
         }
+
+        #token-counter {
+        font-family: monospace;
+        background-color: #f8f9fa;
+        }
+        
+        .token-update {
+            animation: highlight 0.3s ease-out;
+        }
+        
+        @keyframes highlight {
+            0% { color: #4caf50; }
+            100% { color: inherit; }
+        }
+        
+        #token-counter span {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
     </style>
 
 </head>
@@ -96,7 +117,7 @@
         </button>
     
         <!-- Chat Window -->
-        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[500px] bg-white rounded-lg shadow-xl flex flex-col">
+        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[600px] bg-white rounded-lg shadow-xl flex flex-col">
             <!-- Chat Header -->
             <div class="bg-green-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
                 <h3 class="font-bold">EcoHealth Assistant</h3>
@@ -114,6 +135,14 @@
                     <div class="bg-green-100 rounded-lg py-2 px-4 max-w-[80%]">
                         <p class="text-sm">¡Hola! Soy tu asistente de EcoHealth. ¿En qué puedo ayudarte hoy?</p>
                     </div>
+                </div>
+            </div>
+
+            <div id="token-counter" class="text-xs text-gray-500 px-4 py-2 border-t">
+                <div class="flex justify-between">
+                    <span>Tokens entrada: <span id="input-tokens">0</span></span>
+                    <span>Tokens salida: <span id="output-tokens">0</span></span>
+                    <span>Total: <span id="total-tokens">0</span></span>
                 </div>
             </div>
     
@@ -161,47 +190,50 @@
                 if (!message) return;
 
                 try {
-                    // Add user message to chat
                     addMessage(message, true);
                     chatInput.value = '';
-
-                    // Show loading message
                     const loadingId = addLoadingMessage();
 
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Accept': 'application/json'  // Add this line
                         },
                         body: JSON.stringify({ message })
                     });
 
-                    // Remove loading message
                     removeLoadingMessage(loadingId);
 
-                    // Log the raw response for debugging
-                    const responseText = await response.text();
-                    console.log('Raw response:', responseText);
-
-                    let data;
-                    try {
-                        data = JSON.parse(responseText);
-                    } catch (e) {
-                        console.error('Failed to parse response as JSON:', responseText);
-                        throw new Error('Server returned invalid JSON');
-                    }
-
                     if (!response.ok) {
-                        throw new Error(data.error || `Error: ${response.status} ${response.statusText}`);
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error en la respuesta del servidor');
                     }
 
+                    const data = await response.json();
                     addMessage(data.response, false);
+                    
+                    // Actualizar contadores de tokens
+                    if (data.tokens) {
+                        updateTokenCounters(data.tokens);
+                    }
                 } catch (error) {
                     console.error('Error:', error);
-                    addMessage(`Lo siento, ocurrió un error: ${error.message}`, false, true);
+                    addMessage(`Error: ${error.message}`, false, true);
                 }
             });
+
+            function updateTokenCounters(tokens) {
+                document.getElementById('input-tokens').textContent = tokens.input;
+                document.getElementById('output-tokens').textContent = tokens.output;
+                document.getElementById('total-tokens').textContent = tokens.total;
+                
+                // Opcional: Agregar una pequeña animación al actualizar
+                const counters = document.querySelectorAll('#token-counter span span');
+                counters.forEach(counter => {
+                    counter.classList.add('token-update');
+                    setTimeout(() => counter.classList.remove('token-update'), 300);
+                });
+            }            
     
             // Function to add message to chat
             function addMessage(message, isUser, isError = false) {

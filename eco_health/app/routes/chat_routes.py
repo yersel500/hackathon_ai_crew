@@ -1,10 +1,11 @@
 # app/routes/chat_routes.py
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from flask_login import login_required, current_user
 from ..services.pollution_service import PollutionService
 import requests
 import os
 from dotenv import load_dotenv
+import tiktoken
 
 load_dotenv()
 
@@ -14,12 +15,19 @@ chat_routes = Blueprint('chat_routes', __name__)
 API_KEY = os.getenv('AZURE_OPENAI_KEY')
 ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
 
+def count_tokens(text: str) -> int:
+    """Count tokens in a text string using tiktoken."""
+    encoding = tiktoken.encoding_for_model("gpt-4o-mini")
+    return len(encoding.encode(text))
+
 @chat_routes.route('/api/chat', methods=['POST'])
 @login_required
 def chat():
     try:
         data = request.get_json()
         user_message = data.get('message')
+
+        input_tokens = count_tokens(user_message)
         
         if not user_message:
             return jsonify({'error': 'No message provided'}), 400
@@ -84,7 +92,16 @@ def chat():
             
             # Extract the assistant's response from the API response
             ai_response = response.json()['choices'][0]['message']['content']
-            return jsonify({'response': ai_response})
+            output_tokens = count_tokens(ai_response)
+
+            return jsonify({
+                'response': ai_response,
+                'tokens': {
+                    'input': input_tokens,
+                    'output': output_tokens,
+                    'total': input_tokens + output_tokens
+                }
+            })
             
         except requests.RequestException as e:
             print(f"API request failed: {e}")
