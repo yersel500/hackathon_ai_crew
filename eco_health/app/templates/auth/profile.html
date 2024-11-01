@@ -8,39 +8,84 @@
     <div class="bg-white p-8 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Mi Perfil</h2>
         
-        <form id="profileForm" class="space-y-4">
+        <form method="POST" action="{{ url_for('user_routes.update_profile') }}" class="space-y-4">
             <div>
                 <label class="block text-gray-700 mb-2">Nombre Completo</label>
-                <input type="text" name="name" value="{{ user.name }}"
+                <input type="text" name="name" value="{{ current_user.name }}"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
             </div>
 
             <div>
                 <label class="block text-gray-700 mb-2">Email</label>
-                <input type="email" value="{{ user.email }}" disabled
+                <input type="email" value="{{ current_user.email }}" disabled
                     class="w-full px-4 py-2 border rounded-lg bg-gray-100">
             </div>
 
             <div>
                 <label class="block text-gray-700 mb-2">Edad</label>
-                <input type="number" name="age" value="{{ user.age }}"
+                <input type="number" name="age" value="{{ current_user.age }}"
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
             </div>
+
 
             <div>
                 <label class="block text-gray-700 mb-2">Ubicación</label>
-                <input type="text" name="location" value="{{ user.location }}"
+                <select name="location" required
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
+                    <option value="">Seleccione un estado</option>
+                    {% set states = [
+                        ('AL', 'Alabama'), ('AK', 'Alaska'), ('AZ', 'Arizona'),
+                        ('AR', 'Arkansas'), ('CA', 'California'), ('CO', 'Colorado'),
+                        ('CT', 'Connecticut'), ('DE', 'Delaware'), ('FL', 'Florida'),
+                        ('GA', 'Georgia'), ('HI', 'Hawaii'), ('ID', 'Idaho'),
+                        ('IL', 'Illinois'), ('IN', 'Indiana'), ('IA', 'Iowa'),
+                        ('KS', 'Kansas'), ('KY', 'Kentucky'), ('LA', 'Louisiana'),
+                        ('ME', 'Maine'), ('MD', 'Maryland'), ('MA', 'Massachusetts'),
+                        ('MI', 'Michigan'), ('MN', 'Minnesota'), ('MS', 'Mississippi'),
+                        ('MO', 'Missouri'), ('MT', 'Montana'), ('NE', 'Nebraska'),
+                        ('NV', 'Nevada'), ('NH', 'New Hampshire'), ('NJ', 'New Jersey'),
+                        ('NM', 'New Mexico'), ('NY', 'New York'), ('NC', 'North Carolina'),
+                        ('ND', 'North Dakota'), ('OH', 'Ohio'), ('OK', 'Oklahoma'),
+                        ('OR', 'Oregon'), ('PA', 'Pennsylvania'), ('RI', 'Rhode Island'),
+                        ('SC', 'South Carolina'), ('SD', 'South Dakota'), ('TN', 'Tennessee'),
+                        ('TX', 'Texas'), ('UT', 'Utah'), ('VT', 'Vermont'),
+                        ('VA', 'Virginia'), ('WA', 'Washington'), ('WV', 'West Virginia'),
+                        ('WI', 'Wisconsin'), ('WY', 'Wyoming')
+                    ] %}
+                    {% for code, name in states %}
+                        <option value="{{ code }}" {% if current_user.location == code %}selected{% endif %}>
+                            {{ name }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
+
+            <!-- Hidden fields for latitude and longitude -->
+            <input type="hidden" id="latitude" name="latitude" value="{{ current_user.latitude if current_user.latitude else '' }}">
+            <input type="hidden" id="longitude" name="longitude" value="{{ current_user.longitude if current_user.longitude else '' }}">
 
             <div>
                 <label class="block text-gray-700 mb-2">Condiciones Médicas</label>
-                <select name="medical_conditions" multiple
+                <select name="medical_condition" multiple
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
-                    <option value="asthma" {% if 'asthma' in user.medical_conditions %}selected{% endif %}>Asma</option>
-                    <option value="allergies" {% if 'allergies' in user.medical_conditions %}selected{% endif %}>Alergias</option>
-                    <option value="cardiovascular" {% if 'cardiovascular' in user.medical_conditions %}selected{% endif %}>Problemas Cardiovasculares</option>
-                    <option value="respiratory" {% if 'respiratory' in user.medical_conditions %}selected{% endif %}>Problemas Respiratorios</option>
+                    {% set user_conditions = current_user.medical_condition.split(',') if current_user.medical_condition else [] %}
+                    <option value="asthma" {% if 'asthma' in user_conditions %}selected{% endif %}>Asma</option>
+                    <option value="allergies" {% if 'allergies' in user_conditions %}selected{% endif %}>Alergias</option>
+                    <option value="cardiovascular" {% if 'cardiovascular' in user_conditions %}selected{% endif %}>Problemas Cardiovasculares</option>
+                    <option value="respiratory" {% if 'respiratory' in user_conditions %}selected{% endif %}>Problemas Respiratorios</option>
+                    <option value="diabetes" {% if 'diabetes' in user_conditions %}selected{% endif %}>Diabetes</option>
+                    <option value="chronic_obstructive_pulmonary_disease" {% if 'chronic_obstructive_pulmonary_disease' in user_conditions %}selected{% endif %}>Enfermedad Pulmonar Obstructiva Crónica (EPOC)</option>
+                    <option value="lung_cancer" {% if 'lung_cancer' in user_conditions %}selected{% endif %}>Cáncer de Pulmón</option>
+                    <option value="stroke" {% if 'stroke' in user_conditions %}selected{% endif %}>Accidente Cerebrovascular</option>
+                    <option value="chronic_bronchitis" {% if 'chronic_bronchitis' in user_conditions %}selected{% endif %}>Bronquitis Crónica</option>
+                    <option value="emphysema" {% if 'emphysema' in user_conditions %}selected{% endif %}>Enfisema</option>
+                    <option value="pneumonia" {% if 'pneumonia' in user_conditions %}selected{% endif %}>Neumonía</option>
+                    <option value="hypertension" {% if 'hypertension' in user_conditions %}selected{% endif %}>Hipertensión</option>
+                    <option value="heart_disease" {% if 'heart_disease' in user_conditions %}selected{% endif %}>Enfermedad del Corazón</option>
+                    <option value="immune_system_disorders" {% if 'immune_system_disorders' in user_conditions %}selected{% endif %}>Trastornos del Sistema Inmunológico</option>
+                    <option value="pregnancy" {% if 'pregnancy' in user_conditions %}selected{% endif %}>Embarazo</option>
+                    <option value="children" {% if 'children' in user_conditions %}selected{% endif %}>Niños</option>
+                    <option value="elderly" {% if 'elderly' in user_conditions %}selected{% endif %}>Ancianos</option>
                 </select>
             </div>
 
@@ -73,75 +118,4 @@
         </form>
     </div>
 </div>
-
-<script>
-document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const medical_conditions = [...formData.getAll('medical_conditions')];
-    
-    const data = {
-        name: formData.get('name'),
-        age: parseInt(formData.get('age')),
-        location: formData.get('location'),
-        medical_conditions: medical_conditions
-    };
-
-    try {
-        const response = await fetch('/api/user/profile', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert('Perfil actualizado correctamente');
-        } else {
-            alert(result.error);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al actualizar perfil');
-    }
-});
-
-document.getElementById('passwordForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(e.target);
-    const data = {
-        current_password: formData.get('current_password'),
-        new_password: formData.get('new_password')
-    };
-
-    try {
-        const response = await fetch('/api/auth/change-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert('Contraseña actualizada correctamente');
-            e.target.reset();
-        } else {
-            alert(result.error);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al cambiar contraseña');
-    }
-});
-</script>
 {% endblock %}

@@ -10,60 +10,6 @@ class MapService:
         self.pollution_service = PollutionService()
         
     def create_pollution_map(self):
-        # """Crear mapa de contaminación de México"""
-        # # Crear mapa base
-        # m = folium.Map(
-        #     location=self.center,
-        #     zoom_start=5,
-        #     tiles='cartodbpositron'
-        # )
-        
-        # # Obtener datos de contaminación
-        # pollution_data = self.pollution_service.get_all_states_pollution()
-        
-        # # Crear escala de colores
-        # colormap = LinearColormap(
-        #     colors=['green', 'yellow', 'orange', 'red', 'purple'],
-        #     vmin=0,
-        #     vmax=300,
-        #     caption='Índice de Calidad del Aire (AQI)'
-        # )
-        # colormap.add_to(m)
-        
-        # # Añadir marcadores para cada estado
-        # print(f"Number of states: {len(pollution_data)}")
-        # for state, data in pollution_data.items():
-        #     if data and 'aqi' in data:
-        #         print(f"Processing state: {state}")
-        #         color = self._get_color_by_aqi(data['aqi'])
-        #         print(f"Color for AQI {data['aqi']}: {color}")
-        #         # Crear popup con información detallada
-        #         popup_html = self._create_popup_html(data)
-                
-        #         try:
-        #             lat, lon = float(data['lat']), float(data['lon'])
-        #         except ValueError:
-        #             print(f"Invalid coordinates for {state}: lat={data['lat']}, lon={data['lon']}")
-        #             continue
-        #         # Añadir círculo al mapa
-        #         circle = folium.Circle(
-        #             location=[lat, lon],
-        #             radius=25000,  # 25km
-        #             popup=popup_html,
-        #             color=color,
-        #             fill=True,
-        #             fillColor=color,
-        #             fillOpacity=0.7,
-        #         )
-
-                
-        #         # Añadir etiqueta del estado
-        #         folium.Tooltip(
-        #             f"{state}: AQI {data['aqi']}"
-        #         ).add_to(circle)
-
-        #         circle.add_to(m)
-        
         """Crear mapa de contaminación de México"""
         # Crear mapa base
         m = folium.Map(

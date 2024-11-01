@@ -6,3 +6,8 @@ openai
 python-dotenv
 folium
 pyjwt
+flask_sqlalchemy
+Flask-Migrate
+flask_login
+psycopg2-binary
+tiktoken

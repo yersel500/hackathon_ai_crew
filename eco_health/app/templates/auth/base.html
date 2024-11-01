@@ -6,19 +6,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoHealth - {% block title %}{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .markdown-content {
+            line-height: 1.5;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content h4 {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content ul, 
+        .markdown-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .markdown-content li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .markdown-content strong {
+            font-weight: bold;
+        }
+        
+        .markdown-content em {
+            font-style: italic;
+        }
+        
+        .markdown-content blockquote {
+            border-left: 3px solid #cbd5e0;
+            padding-left: 1rem;
+            margin: 0.5rem 0;
+            color: #4a5568;
+        }
+        
+        .markdown-content code {
+            background-color: #edf2f7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+
+        #token-counter {
+        font-family: monospace;
+        background-color: #f8f9fa;
+        }
+        
+        .token-update {
+            animation: highlight 0.3s ease-out;
+        }
+        
+        @keyframes highlight {
+            0% { color: #4caf50; }
+            100% { color: inherit; }
+        }
+        
+        #token-counter span {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+    </style>
+
 </head>
 <body class="bg-gray-100">
     <nav class="bg-white shadow-lg p-4">
         <div class="container mx-auto flex justify-between items-center">
             <a href="/" class="text-2xl font-bold text-green-600">EcoHealth</a>
             <div>
-                {% if current_user %}
-                    <a href="/map" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
-                    <a href="/profile" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
-                    <button onclick="logout()" class="text-gray-600 hover:text-green-600">Cerrar Sesión</button>
+                {% if current_user.is_authenticated %}
+                    <a href="{{url_for('map_routes.show_map')}}" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
+                    <a href="{{ url_for('main.profile') }}" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
+                    <a href="{{ url_for('user_routes.logout') }}" class="text-gray-600 hover:text-green-600 mr-4">Logout</a>
                 {% else %}
-                    <a href="/login" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
-                    <a href="/register" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
+                    <a href="{{ url_for('user_routes.login') }}" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
+                    <a href="{{ url_for('user_routes.register') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
                 {% endif %}
             </div>
         </div>
@@ -39,7 +117,7 @@
         </button>
     
         <!-- Chat Window -->
-        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[500px] bg-white rounded-lg shadow-xl flex flex-col">
+        <div id="chat-window" class="hidden fixed bottom-20 right-4 w-96 h-[650px] bg-white rounded-lg shadow-xl flex flex-col">
             <!-- Chat Header -->
             <div class="bg-green-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
                 <h3 class="font-bold">EcoHealth Assistant</h3>
@@ -59,6 +137,34 @@
                     </div>
                 </div>
             </div>
+
+            <div id="token-counter" class="text-xs text-gray-500 px-4 py-2 border-t">
+                <div class="flex flex-col space-y-2">
+                    <!-- Mensaje actual -->
+                    <div>
+                        <div class="font-semibold mb-1">Mensaje actual:</div>
+                        <div class="flex justify-between">
+                            <span>Entrada: <span id="input-tokens">0</span></span>
+                            <span>Salida: <span id="output-tokens">0</span></span>
+                            <span>Total: <span id="total-tokens">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total sesión -->
+                    <div>
+                        <div class="font-semibold mb-1">Total sesión:</div>
+                        <div class="flex justify-between">
+                            <span>Entrada: <span id="session-input-tokens">0</span></span>
+                            <span>Salida: <span id="session-output-tokens">0</span></span>
+                            <span>Total: <span id="session-total-tokens">0</span></span>
+                        </div>
+                    </div>
+                </div>
+                <button id="reset-tokens" 
+                    class="mt-2 text-xs text-gray-500 hover:text-gray-700 underline">
+                    Reiniciar contadores
+                </button>
+            </div>
     
             <!-- Chat Input -->
             <div class="border-t p-4">
@@ -77,122 +183,144 @@
 
     <!-- Script global para manejo de sesión -->
     <script>
-        async function logout() {
-            try {
-                await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                localStorage.removeItem('token');
-                window.location.href = '/login';
-            } catch (error) {
-                console.error('Error during logout:', error);
-            }
-        }
-  
-      // Verificar token en cada página
-    //   document.addEventListener('DOMContentLoaded', async () => {
-    //       const token = localStorage.getItem('token');
-    //       const protectedPaths = ['/profile', '/map'];
-    //       const currentPath = window.location.pathname;
-  
-    //       if (protectedPaths.includes(currentPath) && !token) {
-    //           // Redirigir a login si no hay token en páginas protegidas
-    //           window.location.href = '/login';
-    //           return;
-    //       }
-  
-    //       if (token) {
-    //           try {
-    //               // Verificar si el token es válido
-    //               const response = await fetch('/api/user/profile', {
-    //                   headers: {
-    //                       'Authorization': `Bearer ${token}`
-    //                   }
-    //               });
-  
-    //               if (!response.ok) {
-    //                   // Si el token no es válido, limpiar y redirigir
-    //                   localStorage.removeItem('token');
-    //                   if (protectedPaths.includes(currentPath)) {
-    //                       window.location.href = '/login';
-    //                   }
-    //               }
-    //           } catch (error) {
-    //               console.error('Error verificando token:', error);
-    //           }
-    //       }
-    //   });
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatToggle = document.getElementById('chat-toggle');
+            const chatWindow = document.getElementById('chat-window');
+            const chatClose = document.getElementById('chat-close');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+    
+            // Toggle chat window
+            chatToggle.addEventListener('click', () => {
+                chatWindow.classList.remove('hidden');
+                chatToggle.classList.add('hidden');
+            });
+    
+            // Close chat window
+            chatClose.addEventListener('click', () => {
+                chatWindow.classList.add('hidden');
+                chatToggle.classList.remove('hidden');
+            });
+    
+            // Handle message submission
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatToggle = document.getElementById('chat-toggle');
-        const chatWindow = document.getElementById('chat-window');
-        const chatClose = document.getElementById('chat-close');
-        const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const chatMessages = document.getElementById('chat-messages');
+                try {
+                    addMessage(message, true);
+                    chatInput.value = '';
+                    const loadingId = addLoadingMessage();
 
-        // Toggle chat window
-        chatToggle.addEventListener('click', () => {
-            chatWindow.classList.remove('hidden');
-            chatToggle.classList.add('hidden');
-        });
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message })
+                    });
 
-        // Close chat window
-        chatClose.addEventListener('click', () => {
-            chatWindow.classList.add('hidden');
-            chatToggle.classList.remove('hidden');
-        });
+                    removeLoadingMessage(loadingId);
 
-        // Handle message submission
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = chatInput.value.trim();
-            if (!message) return;
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error en la respuesta del servidor');
+                    }
 
-            // Add user message to chat
-            addMessage(message, true);
-            chatInput.value = '';
-
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    addMessage('Por favor, inicia sesión para continuar.', false);
-                    return;
+                    const data = await response.json();
+                    addMessage(data.response, false);
+                    
+                    // Actualizar contadores de tokens
+                    if (data.tokens) {
+                        updateTokenCounters(data.tokens);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage(`Error: ${error.message}`, false, true);
                 }
+            });
 
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ message })
+            function updateTokenCounters(tokens) {
+                // Actualizar contadores del mensaje actual
+                document.getElementById('input-tokens').textContent = tokens.input;
+                document.getElementById('output-tokens').textContent = tokens.output;
+                document.getElementById('total-tokens').textContent = tokens.total;
+                
+                // Actualizar contadores de la sesión
+                if (tokens.session_total) {
+                    document.getElementById('session-input-tokens').textContent = tokens.session_total.input;
+                    document.getElementById('session-output-tokens').textContent = tokens.session_total.output;
+                    document.getElementById('session-total-tokens').textContent = tokens.session_total.total;
+                }
+                
+                // Opcional: Animación al actualizar
+                const counters = document.querySelectorAll('#token-counter span span');
+                counters.forEach(counter => {
+                    counter.classList.add('token-update');
+                    setTimeout(() => counter.classList.remove('token-update'), 300);
                 });
+            }
+            
 
-                const data = await response.json();
-                addMessage(data.response, false);
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('Lo siento, hubo un error al procesar tu mensaje.', false);
+            document.getElementById('reset-tokens').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/chat/reset-tokens', { method: 'POST' });
+                    if (response.ok) {
+                        // Resetear todos los contadores a 0
+                        document.querySelectorAll('#token-counter span span').forEach(counter => {
+                            counter.textContent = '0';
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error resetting tokens:', error);
+                }
+            });
+    
+            // Function to add message to chat
+            function addMessage(message, isUser, isError = false) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex items-start mb-4 ${isUser ? 'justify-end' : ''}`;
+                
+                const backgroundColor = isError ? 'bg-red-100' : isUser ? 'bg-blue-100' : 'bg-green-100';
+                
+                const formattedMessage = isUser ? message : marked.parse(message);
+                
+                msgDiv.innerHTML = `
+                    <div class="${backgroundColor} rounded-lg py-2 px-4 max-w-[80%] markdown-content">
+                        ${formattedMessage}
+                    </div>
+                `;
+                
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+    
+            // Function to add loading message
+            function addLoadingMessage() {
+                const loadingDiv = document.createElement('div');
+                const id = 'loading-' + Date.now();
+                loadingDiv.id = id;
+                loadingDiv.className = 'flex items-start mb-4';
+                loadingDiv.innerHTML = `
+                    <div class="bg-gray-100 rounded-lg py-2 px-4 max-w-[80%]">
+                        <p class="text-sm">Escribiendo...</p>
+                    </div>
+                `;
+                chatMessages.appendChild(loadingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return id;
+            }
+    
+            // Function to remove loading message
+            function removeLoadingMessage(id) {
+                const loadingDiv = document.getElementById(id);
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
             }
         });
-
-        // Function to add message to chat
-        function addMessage(message, isUser) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex items-start mb-4 ${isUser ? 'justify-end' : ''}`;
-            
-            msgDiv.innerHTML = `
-                <div class="${isUser ? 'bg-blue-100' : 'bg-green-100'} rounded-lg py-2 px-4 max-w-[80%]">
-                    <p class="text-sm">${message}</p>
-                </div>
-            `;
-            
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    });
     </script>
 </body>
 </html>
