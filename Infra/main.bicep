@@ -401,6 +401,52 @@ param tags object = {}
 param userObjectId string = ''
 
 
+
+@description('Base name of the resource such as web app name and app service plan ')
+@minLength(2)
+param webAppName string = 'AzureLinuxApp'
+
+@description('The SKU of App Service Plan ')
+param sku string = 'B1'
+
+@description('The Runtime stack of current web app')
+param linuxFxVersion string = 'python|3.11'
+
+@description('Location for all resources.')
+
+var webAppPortalName = '${webAppName}-webapp'
+var appServicePlanName = 'AppServicePlan-${webAppName}'
+
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: empty(appServicePlanName) ? toLower('${prefix}-service-plan-${suffix}') : appServicePlanName
+  location: location
+  sku: {
+    name: sku
+  }
+  kind: 'linux'
+  properties: {
+    reserved: true
+  }
+}
+
+resource webAppPortal 'Microsoft.Web/sites@2022-03-01' = {
+  name: empty(webAppPortalName) ? toLower('${prefix}-web-app-${suffix}') : webAppPortalName
+  location: location
+  kind: 'app,linux,container'
+  properties: {
+    serverFarmId: appServicePlan.id
+    siteConfig: {
+      linuxFxVersion: linuxFxVersion
+      ftpsState: 'FtpsOnly'
+    }
+    httpsOnly: true
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+
 // Resources
 module workspace 'modules/logAnalytics.bicep' = {
   name: 'workspace'

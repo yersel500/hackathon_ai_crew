@@ -4,7 +4,7 @@ Start by cloning the repository to your local machine:
 
 ```bash
 git clone https://github.com/yersel500/hackathon_ai_crew
-cd bicep
+cd infra
 ```
 
 ### Step 2: Configure Parameters
@@ -13,7 +13,7 @@ Edit the [main.bicepparam](./main.bicepparam) parameters file:
 Location
 ObjectID: Azure Entra
 prefix and suffix
-
+Ensure that you have enough quota.s
 
 ### Step 3: Deploy Resources
 
