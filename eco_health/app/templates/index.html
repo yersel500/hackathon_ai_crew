@@ -1,1 +1,159 @@
-{% extends 'auth/base.html' %}
+{% extends "auth/base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-green-600 to-green-400 text-white py-20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6">
+                        Tu Salud Ambiental Personalizada
+                    </h1>
+                    <p class="text-xl mb-8">
+                        Monitorea la calidad del aire, recibe recomendaciones personalizadas y protege tu salud con base en tus condiciones médicas específicas.
+                    </p>
+                    {% if not current_user.is_authenticated %}
+                    <div class="space-x-4">
+                        <a href="{{ url_for('user_routes.register') }}" 
+                           class="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Comenzar Ahora
+                        </a>
+                        <a href="{{ url_for('user_routes.login') }}" 
+                           class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition">
+                            Iniciar Sesión
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="md:w-1/2">
+                    <img src="{{ url_for('static', filename='images/hero-image.svg') }}" 
+                         alt="EcoHealth Hero" 
+                         class="w-full max-w-md mx-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">
+                Características Principales
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <div class="text-green-600 mb-4">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Monitoreo en Tiempo Real</h3>
+                    <p class="text-gray-600">
+                        Accede a datos actualizados de calidad del aire en tu ubicación y recibe alertas personalizadas.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <div class="text-green-600 mb-4">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Historial Médico Digital</h3>
+                    <p class="text-gray-600">
+                        Almacena y gestiona tus documentos médicos de forma segura y accede a ellos cuando los necesites.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <div class="text-green-600 mb-4">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">IA Asistente de Salud</h3>
+                    <p class="text-gray-600">
+                        Recibe recomendaciones personalizadas basadas en tus condiciones médicas y la calidad del aire actual.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">
+                ¿Por qué EcoHealth?
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-green-100 rounded-full p-3">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Prevención Proactiva</h3>
+                        <p class="text-gray-600">Anticípate a los riesgos de salud relacionados con la calidad del aire.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-green-100 rounded-full p-3">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Datos Seguros</h3>
+                        <p class="text-gray-600">Tu información médica está protegida con encriptación de grado militar.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="bg-green-100 rounded-full p-3">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">Análisis Avanzado</h3>
+                        <p class="text-gray-600">IA que aprende de tus documentos médicos para mejores recomendaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="bg-green-600 text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">
+                Comienza a Cuidar tu Salud Hoy
+            </h2>
+            <p class="text-xl mb-8">
+                Únete a la comunidad de personas que priorizan su salud ambiental
+            </p>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('user_routes.register') }}" 
+               class="bg-white text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition inline-block">
+                Registrarse Gratis
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
