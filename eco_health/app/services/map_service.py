@@ -31,11 +31,9 @@ class MapService:
         colormap.add_to(m)
         
         # Añadir marcadores para cada estado
-        print(f"Number of states: {len(pollution_data)}")
         for data in pollution_data:
             if data and 'aqi' in data:
                 color = self._get_color_by_aqi(data['aqi'])
-                print(f"Color for AQI {data['aqi']}: {color}")
                 # Crear popup con información detallada
                 popup_html = self._create_popup_html(data)
                 

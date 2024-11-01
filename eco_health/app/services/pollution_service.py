@@ -1,11 +1,15 @@
 # app/services/pollution_service.py
 import requests
 from typing import Dict, Any
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class PollutionService:
     def __init__(self):
-        self.api_key = "aa2f064b4d63a6ddaa773654545e19e1884daa1e"
-        self.base_url = "https://api.waqi.info/feed"
+        self.api_key = os.getenv('AIR_QUALITY_API_KEY')
+        self.base_url = os.getenv('AIR_QUALITY_API_URL')
         
         # Diccionario de estados mexicanos con sus coordenadas aproximadas
         self.mexican_states = {
@@ -42,7 +46,6 @@ class PollutionService:
             url = f"{self.base_url}/{state['name']}/?token={self.api_key}"
             response = requests.get(url)
             data = response.json()
-            print("Data:", data)
 
             if data.get('status') == 'ok':
                 return {
@@ -66,16 +69,14 @@ class PollutionService:
             data = self.get_state_pollution(state)
             if data:
                 pollution_data[state] = data
-        print("Pollution data for all states:", pollution_data)
         return pollution_data
     
     def get_all_station_pollution_in_mexico(self) -> Dict[str, Any]:
         """Obtiene datos de contaminación para un estado específico"""
         try:           
-            url = "https://api.waqi.info/v2/map/bounds?latlng=14.538828,-118.364896,32.718655,-86.710288&networks=all&token=aa2f064b4d63a6ddaa773654545e19e1884daa1e"
+            url = f"{self.base_url}/v2/map/bounds?latlng=14.5329,-125.0,49.384358,-66.93457&networks=all&token={self.api_key}"
             response = requests.get(url)
             data = response.json()
-            print("Data:", data)
 
             if data.get('status') == 'ok':
                 return data['data']
@@ -88,10 +89,9 @@ class PollutionService:
     def get_local_pollution(self) -> Dict[str, Any]:
         """Obtiene datos de contaminación para un estado específico"""
         try:           
-            url = "https://api.waqi.info/feed/here/?token=aa2f064b4d63a6ddaa773654545e19e1884daa1e"
+            url = f"{self.base_url}/feed/here/?token={self.api_key}"
             response = requests.get(url)
             data = response.json()
-            print("Data:", data)
 
             if data.get('status') == 'ok':
                 return data['data']

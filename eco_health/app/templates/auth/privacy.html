@@ -1,0 +1,244 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Políticas de Privacidad{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <!-- ... contenido anterior de políticas de privacidad ... -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Términos de Privacidad y Protección de Datos</h1>
+        
+        <div class="prose prose-green max-w-none">
+            <!-- Introducción -->
+            <p class="text-gray-600 mb-8">
+                La privacidad y protección de tus datos médicos es nuestra máxima prioridad. Nos comprometemos a seguir lineamientos rigurosos en el manejo, uso y retención de tus datos, en conformidad con leyes y normativas como la Health Insurance Portability and Accountability Act (HIPAA). Esto garantiza que tus datos se traten de manera segura y confidencial en todo momento.
+            </p>
+
+            <!-- Secciones -->
+            <div class="space-y-8">
+                <!-- Recopilación de Datos -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Recopilación de Datos</h2>
+                    <p class="text-gray-600">
+                        Solo recopilamos los datos que has consentido explícitamente compartir con nosotros, tales como información en PDF, imágenes, texto, formularios y tu dirección de correo electrónico. No procesamos ni almacenamos información adicional sin tu permiso. Los datos que proporcionas son exclusivamente aquellos necesarios para ofrecerte recomendaciones y optimizar tu experiencia en la aplicación.
+                    </p>
+                </section>
+
+                <!-- Uso de Datos -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Uso de Datos</h2>
+                    <p class="text-gray-600">
+                        La información recopilada se utiliza para proporcionarte recomendaciones, notificaciones y recordatorios personalizados basados en tu perfil médico, con el objetivo de mejorar tu salud y bienestar y ayudarte a prevenir enfermedades. También utilizamos tus datos de manera anonimizada y agregada para realizar análisis estadísticos sobre la prevalencia de ciertas condiciones de salud, con el fin de mejorar y personalizar aún más nuestros servicios. En ningún momento se comparte información individualizada ni identificable sin tu consentimiento explícito.
+                    </p>
+                </section>
+
+                <!-- Protección de Datos -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Protección de Datos</h2>
+                    <p class="text-gray-600">
+                        Implementamos medidas de seguridad avanzadas, como el encriptamiento de la información, redes virtuales, y una política de Cero Confianza (Zero Trust), para asegurar la protección de tus datos. Solo tú tienes acceso directo a tu información personal. Nuestro equipo solo accede a datos estadísticos agregados y no identificables para análisis y mejora de servicios. En caso de que ocurra una brecha de seguridad, serás notificado de inmediato y seguiremos una serie de protocolos internos y de ley para salvaguardar tu informacion, en cualquier caso los datos expuestos al estar anonimizados y encriptados no podran revelar tu identidad.
+                    </p>
+                </section>
+
+                <!-- Encriptación -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Encriptación</h2>
+                    <p class="text-gray-600">
+                        Toda la información ingresada en nuestra aplicación es encriptada utilizando estándares avanzados de cifrado para garantizar la confidencialidad y seguridad de tus datos dentro de nuestra red privada. Este proceso impide el acceso no autorizado y protege tus datos de posibles riesgos de seguridad, asegurando que, en cualquier caso, tus datos no sean accesibles o descifrables sin tu autorización.
+                    </p>
+                </section>
+
+                <!-- Privacidad y Retención de Datos -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Privacidad y Retención de Datos</h2>
+                    <p class="text-gray-600">
+                        Los datos médicos se almacenan en nuestra aplicación durante un periodo máximo de 60 días, tras lo cual se eliminan de manera permanente. Además, tienes el derecho de solicitar la eliminación completa de tus datos en cualquier momento. Al hacerlo, tu información será borrada de manera segura y permanente de nuestra aplicación y servidores. La transparencia y control sobre tus datos es una parte fundamental de nuestro compromiso contigo.
+                    </p>
+                </section>
+
+                <!-- Acceso a Datos -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Acceso a Datos</h2>
+                    <p class="text-gray-600">
+                        Puedes acceder a la información que hayas compartido en cualquier momento. Los documentos originales, como PDFs o imágenes, se eliminan después de 60 días, pero los datos médicos extraídos están disponibles para ti de manera continua mientras los necesites en la aplicación.
+                    </p>
+                </section>
+
+                <!-- Notificación de Cambios -->
+                <section>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Notificación de Cambios</h2>
+                    <p class="text-gray-600">
+                        En caso de cambios en estos términos de privacidad o en la forma en que protegemos tus datos, te notificaremos oportunamente para garantizar que siempre estés informado de nuestras prácticas de seguridad.
+                    </p>
+                </section>
+            </div>
+
+            <!-- Última actualización -->
+            <div class="mt-12 pt-8 border-t border-gray-200">
+                <p class="text-sm text-gray-500">
+                    Última actualización: Noviembre 2024
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulario de Aceptación -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Aceptación de Términos</h2>
+            <form id="privacy-acceptance-form" class="space-y-4">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="accept-terms" name="accept-terms" type="checkbox"
+                            class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3">
+                        <label for="accept-terms" class="text-sm text-gray-600">
+                            He leído y acepto los términos de privacidad y protección de datos de EcoHealth
+                        </label>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors disabled:bg-gray-400"
+                    id="accept-button" disabled>
+                    Aceptar Términos
+                </button>
+            </form>
+        </div>
+
+        <!-- Formulario de Eliminación de Datos -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Solicitud de Eliminación de Datos</h2>
+            <p class="text-gray-600 mb-6">
+                Si deseas eliminar todos tus datos de nuestra plataforma, por favor completa el siguiente formulario. 
+                Esta acción es irreversible y eliminará permanentemente toda tu información.
+            </p>
+            <form id="data-deletion-form" class="space-y-6">
+                <div>
+                    <label for="deletion-reason" class="block text-sm font-medium text-gray-700 mb-2">
+                        Motivo de la eliminación (opcional)
+                    </label>
+                    <textarea id="deletion-reason" name="reason" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                        placeholder="Nos ayuda a mejorar nuestros servicios"></textarea>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="confirm-deletion" name="confirm-deletion" type="checkbox"
+                            class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3">
+                        <label for="confirm-deletion" class="text-sm text-gray-600">
+                            Entiendo que esta acción es irreversible y eliminará permanentemente todos mis datos
+                        </label>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors disabled:bg-gray-400"
+                    id="delete-button" disabled>
+                    Solicitar Eliminación de Datos
+                </button>
+            </form>
+        </div>
+
+        <!-- Última actualización -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+            <p class="text-sm text-gray-500">
+                Última actualización: Noviembre 2024
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modales de Confirmación -->
+<div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg max-w-md">
+        <h3 class="text-xl font-bold text-gray-900 mb-4" id="modal-title"></h3>
+        <p class="text-gray-600 mb-6" id="modal-message"></p>
+        <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full"
+            onclick="closeModal('success-modal')">
+            Entendido
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const acceptanceForm = document.getElementById('privacy-acceptance-form');
+        const deletionForm = document.getElementById('data-deletion-form');
+        const acceptTermsCheckbox = document.getElementById('accept-terms');
+        const confirmDeletionCheckbox = document.getElementById('confirm-deletion');
+        const acceptButton = document.getElementById('accept-button');
+        const deleteButton = document.getElementById('delete-button');
+
+        // Manejar checkbox de aceptación
+        acceptTermsCheckbox.addEventListener('change', function() {
+            acceptButton.disabled = !this.checked;
+        });
+
+        // Manejar checkbox de eliminación
+        confirmDeletionCheckbox.addEventListener('change', function() {
+            deleteButton.disabled = !this.checked;
+        });
+
+        // Manejar envío de aceptación
+        acceptanceForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                const response = await fetch('/api/accept-privacy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    showModal('Términos Aceptados', 'Has aceptado exitosamente los términos de privacidad.');
+                } else {
+                    throw new Error('Error al procesar la solicitud');
+                }
+            } catch (error) {
+                showModal('Error', 'Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
+            }
+        });
+
+        // Manejar solicitud de eliminación
+        deletionForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            try {
+                const response = await fetch('/api/request-deletion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reason: document.getElementById('deletion-reason').value
+                    })
+                });
+
+                if (response.ok) {
+                    showModal('Solicitud Enviada', 
+                        'Tu solicitud de eliminación de datos ha sido recibida. Procesaremos tu solicitud en las próximas 24 horas.');
+                    deletionForm.reset();
+                } else {
+                    throw new Error('Error al procesar la solicitud');
+                }
+            } catch (error) {
+                showModal('Error', 'Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
+            }
+        });
+    });
+
+    function showModal(title, message) {
+        const modal = document.getElementById('success-modal');
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').textContent = message;
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+</script>
+{% endblock %}

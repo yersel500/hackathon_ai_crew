@@ -11,3 +11,4 @@ Flask-Migrate
 flask_login
 psycopg2-binary
 tiktoken
+cryptography

@@ -4,7 +4,7 @@
 {% block title %}Registro{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+<div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Registro de Usuario</h2>
     
     <form method="POST" action="{{ url_for('user_routes.register') }}" class="space-y-4">
@@ -38,23 +38,17 @@
                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
                 <option value="">Seleccione un estado</option>
                 {% set states = [
-                    ('AL', 'Alabama'), ('AK', 'Alaska'), ('AZ', 'Arizona'),
-                    ('AR', 'Arkansas'), ('CA', 'California'), ('CO', 'Colorado'),
-                    ('CT', 'Connecticut'), ('DE', 'Delaware'), ('FL', 'Florida'),
-                    ('GA', 'Georgia'), ('HI', 'Hawaii'), ('ID', 'Idaho'),
-                    ('IL', 'Illinois'), ('IN', 'Indiana'), ('IA', 'Iowa'),
-                    ('KS', 'Kansas'), ('KY', 'Kentucky'), ('LA', 'Louisiana'),
-                    ('ME', 'Maine'), ('MD', 'Maryland'), ('MA', 'Massachusetts'),
-                    ('MI', 'Michigan'), ('MN', 'Minnesota'), ('MS', 'Mississippi'),
-                    ('MO', 'Missouri'), ('MT', 'Montana'), ('NE', 'Nebraska'),
-                    ('NV', 'Nevada'), ('NH', 'New Hampshire'), ('NJ', 'New Jersey'),
-                    ('NM', 'New Mexico'), ('NY', 'New York'), ('NC', 'North Carolina'),
-                    ('ND', 'North Dakota'), ('OH', 'Ohio'), ('OK', 'Oklahoma'),
-                    ('OR', 'Oregon'), ('PA', 'Pennsylvania'), ('RI', 'Rhode Island'),
-                    ('SC', 'South Carolina'), ('SD', 'South Dakota'), ('TN', 'Tennessee'),
-                    ('TX', 'Texas'), ('UT', 'Utah'), ('VT', 'Vermont'),
-                    ('VA', 'Virginia'), ('WA', 'Washington'), ('WV', 'West Virginia'),
-                    ('WI', 'Wisconsin'), ('WY', 'Wyoming')
+                    ('AGS', 'Aguascalientes'), ('BC', 'Baja California'), ('BCS', 'Baja California Sur'),
+                    ('CAMP', 'Campeche'), ('CHIS', 'Chiapas'), ('CHIH', 'Chihuahua'),
+                    ('COAH', 'Coahuila'), ('COL', 'Colima'), ('CDMX', 'Ciudad de México'),
+                    ('DGO', 'Durango'), ('GTO', 'Guanajuato'), ('GRO', 'Guerrero'),
+                    ('HGO', 'Hidalgo'), ('JAL', 'Jalisco'), ('MEX', 'Estado de México'),
+                    ('MICH', 'Michoacán'), ('MOR', 'Morelos'), ('NAY', 'Nayarit'),
+                    ('NL', 'Nuevo León'), ('OAX', 'Oaxaca'), ('PUE', 'Puebla'),
+                    ('QRO', 'Querétaro'), ('QROO', 'Quintana Roo'), ('SLP', 'San Luis Potosí'),
+                    ('SIN', 'Sinaloa'), ('SON', 'Sonora'), ('TAB', 'Tabasco'),
+                    ('TAMPS', 'Tamaulipas'), ('TLAX', 'Tlaxcala'), ('VER', 'Veracruz'),
+                    ('YUC', 'Yucatán'), ('ZAC', 'Zacatecas')
                 ] %}
                 {% for code, name in states %}
                     <option value="{{ code }}">
@@ -70,27 +64,46 @@
 
         <div>
             <label class="block text-gray-700 mb-2">Condiciones Médicas</label>
-            <select name="medical_condition" multiple
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
-                <option value="asthma">Asma</option>
-                <option value="allergies">Alergias</option>
-                <option value="cardiovascular">Problemas Cardiovasculares</option>
-                <option value="respiratory">Problemas Respiratorios</option>
-                <option value="diabetes">Diabetes</option>
-                <option value="chronic_obstructive_pulmonary_disease">Enfermedad Pulmonar Obstructiva Crónica (EPOC)</option>
-                <option value="lung_cancer">Cáncer de Pulmón</option>
-                <option value="stroke">Accidente Cerebrovascular</option>
-                <option value="chronic_bronchitis">Bronquitis Crónica</option>
-                <option value="emphysema">Enfisema</option>
-                <option value="pneumonia">Neumonía</option>
-                <option value="hypertension">Hipertensión</option>
-                <option value="heart_disease">Enfermedad del Corazón</option>
-                <option value="immune_system_disorders">Trastornos del Sistema Inmunológico</option>
-                <option value="pregnancy">Embarazo</option>
-                <option value="children">Niños</option>
-                <option value="elderly">Ancianos</option>
-            </select>
-            <p class="text-sm text-gray-500 mt-1">Mantén presionado Ctrl para seleccionar múltiples opciones</p>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 bg-gray-100 p-2 rounded-md">
+                {% set conditions = [
+                    ('asthma', 'Asma'),
+                    ('allergies', 'Alergias'),
+                    ('cardiovascular', 'Problemas Cardiovasculares'),
+                    ('respiratory', 'Problemas Respiratorios'),
+                    ('diabetes', 'Diabetes'),
+                    ('chronic_obstructive_pulmonary_disease', 'EPOC'),
+                    ('lung_cancer', 'Cáncer de Pulmón'),
+                    ('stroke', 'Accidente Cerebrovascular'),
+                    ('chronic_bronchitis', 'Bronquitis Crónica'),
+                    ('emphysema', 'Enfisema'),
+                    ('pneumonia', 'Neumonía'),
+                    ('hypertension', 'Hipertensión'),
+                    ('heart_disease', 'Enfermedad del Corazón'),
+                    ('immune_system_disorders', 'Trastornos del Sistema Inmunológico'),
+                    ('pregnancy', 'Embarazo'),
+                    ('children', 'Niños'),
+                    ('elderly', 'Ancianos'),
+                    ('chronic_fatigue', 'Fatiga crónica'),
+                    ('frequent_headache', 'Dolor de cabeza frecuente'),
+                    ('eye_irritation', 'Irritación ocular'),
+                    ('persistent_cough', 'Tos persistente'),
+                    ('breathing_difficulty', 'Dificultad para respirar'),
+                    ('sleep_disorders', 'Alteraciones del sueño'),
+                    ('concentration_problems', 'Problemas para concentrarte')
+                ] %}
+                {% for value, label in conditions %}
+                <div class="flex items-center">
+                    <input type="checkbox" 
+                           id="{{ value }}" 
+                           name="medical_condition" 
+                           value="{{ value }}"
+                           class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                    <label for="{{ value }}" class="ml-2 block text-sm text-gray-700">
+                        {{ label }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
         </div>
 
         <button type="submit"

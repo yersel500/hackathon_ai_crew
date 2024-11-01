@@ -34,23 +34,17 @@
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
                     <option value="">Seleccione un estado</option>
                     {% set states = [
-                        ('AL', 'Alabama'), ('AK', 'Alaska'), ('AZ', 'Arizona'),
-                        ('AR', 'Arkansas'), ('CA', 'California'), ('CO', 'Colorado'),
-                        ('CT', 'Connecticut'), ('DE', 'Delaware'), ('FL', 'Florida'),
-                        ('GA', 'Georgia'), ('HI', 'Hawaii'), ('ID', 'Idaho'),
-                        ('IL', 'Illinois'), ('IN', 'Indiana'), ('IA', 'Iowa'),
-                        ('KS', 'Kansas'), ('KY', 'Kentucky'), ('LA', 'Louisiana'),
-                        ('ME', 'Maine'), ('MD', 'Maryland'), ('MA', 'Massachusetts'),
-                        ('MI', 'Michigan'), ('MN', 'Minnesota'), ('MS', 'Mississippi'),
-                        ('MO', 'Missouri'), ('MT', 'Montana'), ('NE', 'Nebraska'),
-                        ('NV', 'Nevada'), ('NH', 'New Hampshire'), ('NJ', 'New Jersey'),
-                        ('NM', 'New Mexico'), ('NY', 'New York'), ('NC', 'North Carolina'),
-                        ('ND', 'North Dakota'), ('OH', 'Ohio'), ('OK', 'Oklahoma'),
-                        ('OR', 'Oregon'), ('PA', 'Pennsylvania'), ('RI', 'Rhode Island'),
-                        ('SC', 'South Carolina'), ('SD', 'South Dakota'), ('TN', 'Tennessee'),
-                        ('TX', 'Texas'), ('UT', 'Utah'), ('VT', 'Vermont'),
-                        ('VA', 'Virginia'), ('WA', 'Washington'), ('WV', 'West Virginia'),
-                        ('WI', 'Wisconsin'), ('WY', 'Wyoming')
+                        ('AGS', 'Aguascalientes'), ('BC', 'Baja California'), ('BCS', 'Baja California Sur'),
+                        ('CAMP', 'Campeche'), ('CHIS', 'Chiapas'), ('CHIH', 'Chihuahua'),
+                        ('COAH', 'Coahuila'), ('COL', 'Colima'), ('CDMX', 'Ciudad de México'),
+                        ('DGO', 'Durango'), ('GTO', 'Guanajuato'), ('GRO', 'Guerrero'),
+                        ('HGO', 'Hidalgo'), ('JAL', 'Jalisco'), ('MEX', 'Estado de México'),
+                        ('MICH', 'Michoacán'), ('MOR', 'Morelos'), ('NAY', 'Nayarit'),
+                        ('NL', 'Nuevo León'), ('OAX', 'Oaxaca'), ('PUE', 'Puebla'),
+                        ('QRO', 'Querétaro'), ('QROO', 'Quintana Roo'), ('SLP', 'San Luis Potosí'),
+                        ('SIN', 'Sinaloa'), ('SON', 'Sonora'), ('TAB', 'Tabasco'),
+                        ('TAMPS', 'Tamaulipas'), ('TLAX', 'Tlaxcala'), ('VER', 'Veracruz'),
+                        ('YUC', 'Yucatán'), ('ZAC', 'Zacatecas')
                     ] %}
                     {% for code, name in states %}
                         <option value="{{ code }}" {% if current_user.location == code %}selected{% endif %}>
@@ -66,28 +60,51 @@
 
             <div>
                 <label class="block text-gray-700 mb-2">Condiciones Médicas</label>
-                <select name="medical_condition" multiple
-                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 bg-gray-100 p-2 rounded-md">
                     {% set user_conditions = current_user.medical_condition.split(',') if current_user.medical_condition else [] %}
-                    <option value="asthma" {% if 'asthma' in user_conditions %}selected{% endif %}>Asma</option>
-                    <option value="allergies" {% if 'allergies' in user_conditions %}selected{% endif %}>Alergias</option>
-                    <option value="cardiovascular" {% if 'cardiovascular' in user_conditions %}selected{% endif %}>Problemas Cardiovasculares</option>
-                    <option value="respiratory" {% if 'respiratory' in user_conditions %}selected{% endif %}>Problemas Respiratorios</option>
-                    <option value="diabetes" {% if 'diabetes' in user_conditions %}selected{% endif %}>Diabetes</option>
-                    <option value="chronic_obstructive_pulmonary_disease" {% if 'chronic_obstructive_pulmonary_disease' in user_conditions %}selected{% endif %}>Enfermedad Pulmonar Obstructiva Crónica (EPOC)</option>
-                    <option value="lung_cancer" {% if 'lung_cancer' in user_conditions %}selected{% endif %}>Cáncer de Pulmón</option>
-                    <option value="stroke" {% if 'stroke' in user_conditions %}selected{% endif %}>Accidente Cerebrovascular</option>
-                    <option value="chronic_bronchitis" {% if 'chronic_bronchitis' in user_conditions %}selected{% endif %}>Bronquitis Crónica</option>
-                    <option value="emphysema" {% if 'emphysema' in user_conditions %}selected{% endif %}>Enfisema</option>
-                    <option value="pneumonia" {% if 'pneumonia' in user_conditions %}selected{% endif %}>Neumonía</option>
-                    <option value="hypertension" {% if 'hypertension' in user_conditions %}selected{% endif %}>Hipertensión</option>
-                    <option value="heart_disease" {% if 'heart_disease' in user_conditions %}selected{% endif %}>Enfermedad del Corazón</option>
-                    <option value="immune_system_disorders" {% if 'immune_system_disorders' in user_conditions %}selected{% endif %}>Trastornos del Sistema Inmunológico</option>
-                    <option value="pregnancy" {% if 'pregnancy' in user_conditions %}selected{% endif %}>Embarazo</option>
-                    <option value="children" {% if 'children' in user_conditions %}selected{% endif %}>Niños</option>
-                    <option value="elderly" {% if 'elderly' in user_conditions %}selected{% endif %}>Ancianos</option>
-                </select>
+                    {% set conditions = [
+                        ('asthma', 'Asma'),
+                        ('allergies', 'Alergias'),
+                        ('cardiovascular', 'Problemas Cardiovasculares'),
+                        ('respiratory', 'Problemas Respiratorios'),
+                        ('diabetes', 'Diabetes'),
+                        ('chronic_obstructive_pulmonary_disease', 'EPOC'),
+                        ('lung_cancer', 'Cáncer de Pulmón'),
+                        ('stroke', 'Accidente Cerebrovascular'),
+                        ('chronic_bronchitis', 'Bronquitis Crónica'),
+                        ('emphysema', 'Enfisema'),
+                        ('pneumonia', 'Neumonía'),
+                        ('hypertension', 'Hipertensión'),
+                        ('heart_disease', 'Enfermedad del Corazón'),
+                        ('immune_system_disorders', 'Trastornos del Sistema Inmunológico'),
+                        ('pregnancy', 'Embarazo'),
+                        ('children', 'Niños'),
+                        ('elderly', 'Ancianos'),
+                        ('chronic_fatigue', 'Fatiga crónica'),
+                        ('frequent_headache', 'Dolor de cabeza frecuente'),
+                        ('eye_irritation', 'Irritación ocular'),
+                        ('persistent_cough', 'Tos persistente'),
+                        ('breathing_difficulty', 'Dificultad para respirar'),
+                        ('sleep_disorders', 'Alteraciones del sueño'),
+                        ('concentration_problems', 'Problemas para concentrarte')
+                    ] %}
+                    {% for value, label in conditions %}
+                    <div class="flex items-center h-10 px-2 bg-white rounded hover:bg-gray-50">
+                        <input type="checkbox" 
+                               id="{{ value }}" 
+                               name="medical_condition" 
+                               value="{{ value }}"
+                               {% if value in user_conditions %}checked{% endif %}
+                               class="h-5 w-5 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <label for="{{ value }}" class="ml-2 block text-sm text-gray-700">
+                            {{ label }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
+
+
 
             <button type="submit"
                 class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
