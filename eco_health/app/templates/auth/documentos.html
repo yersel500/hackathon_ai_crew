@@ -64,10 +64,15 @@
                   </button>
               </div>
               <div id="content-{{ doc.id }}" class="hidden mt-2">
-                  <div class="bg-white p-3 rounded border text-sm overflow-auto max-h-48">
-                      <pre class="whitespace-pre-wrap">{{ doc.get_content() }}</pre>
-                  </div>
-              </div>
+                <div class="bg-white p-3 rounded border text-sm overflow-auto max-h-48">
+                    {% set decrypted_content = doc.get_content() %}
+                    {% if decrypted_content %}
+                        <pre class="whitespace-pre-wrap">{{ decrypted_content }}</pre>
+                    {% else %}
+                        <p class="text-gray-500 italic">Error al recuperar el contenido</p>
+                    {% endif %}
+                </div>
+            </div>
           </div>
           {% endfor %}
       </div>
