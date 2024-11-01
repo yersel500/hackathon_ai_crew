@@ -15,7 +15,7 @@ ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
 
 @chat_routes.route('/api/chat', methods=['POST'])
 @login_required
-def chat(current_user):
+def chat():
     try:
         data = request.get_json()
         user_message = data.get('message')

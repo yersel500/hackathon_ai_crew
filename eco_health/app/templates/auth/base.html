@@ -77,68 +77,116 @@
 
     <!-- Script global para manejo de sesión -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const chatToggle = document.getElementById('chat-toggle');
-        const chatWindow = document.getElementById('chat-window');
-        const chatClose = document.getElementById('chat-close');
-        const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const chatMessages = document.getElementById('chat-messages');
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatToggle = document.getElementById('chat-toggle');
+            const chatWindow = document.getElementById('chat-window');
+            const chatClose = document.getElementById('chat-close');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+    
+            // Toggle chat window
+            chatToggle.addEventListener('click', () => {
+                chatWindow.classList.remove('hidden');
+                chatToggle.classList.add('hidden');
+            });
+    
+            // Close chat window
+            chatClose.addEventListener('click', () => {
+                chatWindow.classList.add('hidden');
+                chatToggle.classList.remove('hidden');
+            });
+    
+            // Handle message submission
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
 
-        // Toggle chat window
-        chatToggle.addEventListener('click', () => {
-            chatWindow.classList.remove('hidden');
-            chatToggle.classList.add('hidden');
-        });
+                try {
+                    // Add user message to chat
+                    addMessage(message, true);
+                    chatInput.value = '';
 
-        // Close chat window
-        chatClose.addEventListener('click', () => {
-            chatWindow.classList.add('hidden');
-            chatToggle.classList.remove('hidden');
-        });
+                    // Show loading message
+                    const loadingId = addLoadingMessage();
 
-        // Handle message submission
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const message = chatInput.value.trim();
-            if (!message) return;
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'  // Add this line
+                        },
+                        body: JSON.stringify({ message })
+                    });
 
-            // Add user message to chat
-            addMessage(message, true);
-            chatInput.value = '';
+                    // Remove loading message
+                    removeLoadingMessage(loadingId);
 
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message })
-                });
+                    // Log the raw response for debugging
+                    const responseText = await response.text();
+                    console.log('Raw response:', responseText);
 
-                const data = await response.json();
-                addMessage(data.response, false);
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('Lo siento, hubo un error al procesar tu mensaje.', false);
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('Failed to parse response as JSON:', responseText);
+                        throw new Error('Server returned invalid JSON');
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(data.error || `Error: ${response.status} ${response.statusText}`);
+                    }
+
+                    addMessage(data.response, false);
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage(`Lo siento, ocurrió un error: ${error.message}`, false, true);
+                }
+            });
+    
+            // Function to add message to chat
+            function addMessage(message, isUser, isError = false) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `flex items-start mb-4 ${isUser ? 'justify-end' : ''}`;
+                
+                const backgroundColor = isError ? 'bg-red-100' : isUser ? 'bg-blue-100' : 'bg-green-100';
+                
+                msgDiv.innerHTML = `
+                    <div class="${backgroundColor} rounded-lg py-2 px-4 max-w-[80%]">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+                
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+    
+            // Function to add loading message
+            function addLoadingMessage() {
+                const loadingDiv = document.createElement('div');
+                const id = 'loading-' + Date.now();
+                loadingDiv.id = id;
+                loadingDiv.className = 'flex items-start mb-4';
+                loadingDiv.innerHTML = `
+                    <div class="bg-gray-100 rounded-lg py-2 px-4 max-w-[80%]">
+                        <p class="text-sm">Escribiendo...</p>
+                    </div>
+                `;
+                chatMessages.appendChild(loadingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return id;
+            }
+    
+            // Function to remove loading message
+            function removeLoadingMessage(id) {
+                const loadingDiv = document.getElementById(id);
+                if (loadingDiv) {
+                    loadingDiv.remove();
+                }
             }
         });
-
-        // Function to add message to chat
-        function addMessage(message, isUser) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex items-start mb-4 ${isUser ? 'justify-end' : ''}`;
-            
-            msgDiv.innerHTML = `
-                <div class="${isUser ? 'bg-blue-100' : 'bg-green-100'} rounded-lg py-2 px-4 max-w-[80%]">
-                    <p class="text-sm">${message}</p>
-                </div>
-            `;
-            
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-    });
     </script>
 </body>
 </html>
