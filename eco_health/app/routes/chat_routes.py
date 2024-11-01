@@ -2,6 +2,7 @@
 from flask import Blueprint, request, jsonify, session
 from flask_login import login_required, current_user
 from ..services.pollution_service import PollutionService
+from ..models.document import Document 
 import requests
 import os
 from dotenv import load_dotenv
@@ -19,6 +20,11 @@ def count_tokens(text: str) -> int:
     """Count tokens in a text string using tiktoken."""
     encoding = tiktoken.encoding_for_model("gpt-4o-mini")
     return len(encoding.encode(text))
+
+def get_user_documents_content(user_id):
+    """Get processed content from user's documents"""
+    documents = Document.query.filter_by(user_id=user_id).all()
+    return [doc.get_content() for doc in documents]
 
 @chat_routes.route('/api/chat', methods=['POST'])
 @login_required
@@ -39,6 +45,9 @@ def chat():
 
         pollution_data = PollutionService().get_local_pollution()
 
+        user_documents = get_user_documents_content(current_user.id)
+        documents_context = "\n".join(user_documents) if user_documents else "No documents available"
+
         # Create payload with user context
         payload = {
             "messages": [
@@ -52,9 +61,10 @@ def chat():
                             Medical Profile:
                             - Conditions: {current_user.medical_condition}
                             - Location: {current_user.location}
-
-                            Current Air Quality Metrics:
+                            - Current Air Quality Metrics:
                             {pollution_data}
+
+                            - User documents context: {documents_context}
 
                             Instructions:
                             1. Analyze the air quality data and its potential impact on the user's specific medical conditions

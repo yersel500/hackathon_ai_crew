@@ -1,0 +1,205 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Documentos{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Subir Documentos</h2>
+    
+    <!-- Upload Form -->
+    <form id="upload-form" class="space-y-6" enctype="multipart/form-data">
+        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <input type="file" id="document" name="documents" 
+                   accept=".pdf,.png,.jpg,.jpeg" 
+                   class="hidden" multiple>
+            <label for="document" class="cursor-pointer">
+                <div class="space-y-2">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" 
+                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="text-gray-600">
+                        Arrastra documentos aquí o
+                        <span class="text-green-500 hover:text-green-600">selecciona archivos</span>
+                    </div>
+                    <p class="text-sm text-gray-500">PDF, PNG, JPG (max. 10MB)</p>
+                </div>
+            </label>
+        </div>
+
+        <div id="file-list" class="space-y-2"></div>
+
+        <button type="submit"
+            class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-200">
+            Procesar Documentos
+        </button>
+    </form>
+
+    <!-- Progress and Status -->
+    <div id="upload-status" class="mt-6 hidden">
+        <div class="w-full bg-gray-200 rounded-full h-2">
+            <div id="upload-progress" class="bg-green-600 h-2 rounded-full" style="width: 0%"></div>
+        </div>
+        <p id="status-text" class="text-sm text-gray-600 mt-2"></p>
+    </div>
+
+    <div id="error-display" class="mt-4 text-red-600 hidden"></div>
+
+    <!-- Documents List -->
+    <div class="mt-8">
+      <h3 class="text-lg font-semibold mb-4">Documentos Procesados</h3>
+      <div id="documents-list" class="space-y-4">
+          {% for doc in documents %}
+          <div class="bg-gray-50 p-4 rounded-lg">
+              <div class="flex justify-between items-center mb-2">
+                  <div>
+                      <p class="font-medium">{{ doc.filename }}</p>
+                      <p class="text-sm text-gray-500">{{ doc.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                  </div>
+                  <button 
+                      onclick="toggleContent('content-{{ doc.id }}')"
+                      class="text-green-600 hover:text-green-700 text-sm"
+                  >
+                      Ver contenido
+                  </button>
+              </div>
+              <div id="content-{{ doc.id }}" class="hidden mt-2">
+                  <div class="bg-white p-3 rounded border text-sm overflow-auto max-h-48">
+                      <pre class="whitespace-pre-wrap">{{ doc.get_content() }}</pre>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+  </div>
+</div>
+
+<script>
+function toggleContent(id) {
+    const content = document.getElementById(id);
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+    } else {
+        content.classList.add('hidden');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('upload-form');
+    const fileInput = document.getElementById('document');
+    const fileList = document.getElementById('file-list');
+    const uploadStatus = document.getElementById('upload-status');
+    const uploadProgress = document.getElementById('upload-progress');
+    const statusText = document.getElementById('status-text');
+
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        fileList.innerHTML = '';
+        [...this.files].forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'flex items-center justify-between bg-gray-50 p-2 rounded';
+            fileItem.innerHTML = `
+                <span class="text-sm">${file.name}</span>
+                <span class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+            `;
+            fileList.appendChild(fileItem);
+        });
+    });
+
+    // Form submit handler
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      [...fileInput.files].forEach(file => {
+          formData.append('documents', file);
+          console.log('Appending file:', file.name);
+      });
+
+      uploadStatus.classList.remove('hidden');
+      
+      try {
+          console.log('Sending request...');
+          const response = await fetch('/upload-documents', {
+              method: 'POST',
+              body: formData
+          });
+
+          console.log('Response status:', response.status);
+          
+          if (!response.ok) {
+              const errorData = await response.json();
+              console.error('Error data:', errorData);
+              throw new Error(errorData.error || 'Upload failed');
+          }
+
+          const result = await response.json();
+          console.log('Success result:', result);
+          
+          statusText.textContent = 'Procesando documento... Esto puede tomar unos segundos';
+          uploadProgress.style.width = '50%';
+          
+          // Mostrar resultados específicos
+          if (result.results) {
+              const resultsHtml = result.results.map(r => `
+                  <div class="text-sm ${r.status === 'success' ? 'text-green-600' : 'text-red-600'}">
+                      ${r.filename}: ${r.status}${r.error ? ` - ${r.error}` : ''}
+                  </div>
+              `).join('');
+              fileList.innerHTML = resultsHtml;
+          }
+          
+          // Reload after showing results
+          setTimeout(() => {
+              window.location.reload();
+          }, 3000);
+
+      } catch (error) {
+          console.error('Error details:', error);
+          statusText.textContent = `Error al procesar los documentos: ${error.message}`;
+          uploadProgress.style.width = '0%';
+      }
+    });
+
+    // Drag and drop handlers
+    const dropZone = document.querySelector('.border-dashed');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('border-green-500');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('border-green-500');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        
+        // Trigger the change event
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+    }
+});
+</script>
+{% endblock %}

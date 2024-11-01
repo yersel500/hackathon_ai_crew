@@ -2,7 +2,9 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from .models.user import db, User
+from .models import db
+from .models.user import User
+from .models.document import Document
 from .config import Config
 from sqlalchemy import inspect
 
@@ -27,11 +29,13 @@ def create_app():
     from .routes.map_routes import map_routes
     from .routes.chat_routes import chat_routes
     from .routes.main import main
+    from .routes.document_routes import document_routes
     
     app.register_blueprint(user_routes)
     app.register_blueprint(map_routes)
     app.register_blueprint(chat_routes)
     app.register_blueprint(main)
+    app.register_blueprint(document_routes)
 
     return app
 
@@ -47,7 +51,7 @@ def init_db(app):
             tables = inspector.get_table_names()
             print("Created tables:", tables)
             
-            if 'users' in tables:
+            if 'users' in tables and 'documents' in tables:
                 print("Users table created successfully!")
             else:
                 print("Users table was not created!")

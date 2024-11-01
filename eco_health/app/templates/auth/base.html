@@ -91,6 +91,7 @@
             <a href="/" class="text-2xl font-bold text-green-600">EcoHealth</a>
             <div>
                 {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('document_routes.list_documents') }}" class="text-gray-600 hover:text-green-600 mr-4">Documentos</a>
                     <a href="{{url_for('map_routes.show_map')}}" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
                     <a href="{{ url_for('main.profile') }}" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
                     <a href="{{ url_for('user_routes.logout') }}" class="text-gray-600 hover:text-green-600 mr-4">Logout</a>
