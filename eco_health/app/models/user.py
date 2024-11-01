@@ -1,66 +1,22 @@
-# app/models/user.py
-from datetime import datetime
-import json
-import os
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class User:
-    def __init__(self):
-        self.users_file = 'users.json'
-        # Crear archivo de usuarios si no existe
-        if not os.path.exists(self.users_file):
-            with open(self.users_file, 'w') as f:
-                json.dump({}, f)
+db = SQLAlchemy()
 
-    def create_user(self, user_data):
-        try:
-            with open(self.users_file, 'r') as f:
-                users = json.load(f)
-            
-            user_id = user_data.get("email")
-            users[user_id] = {
-                "id": user_id,
-                "email": user_data.get("email"),
-                "password": user_data.get("password"),  # Debe estar ya hasheado
-                "name": user_data.get("name"),
-                "medical_conditions": user_data.get("medical_conditions", []),
-                "age": user_data.get("age"),
-                "location": user_data.get("location"),
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
-            }
-            
-            with open(self.users_file, 'w') as f:
-                json.dump(users, f)
-            
-            return users[user_id]
-        except Exception as e:
-            print(f"Error creating user: {e}")
-            raise
-
-    def get_user(self, user_id):
-        try:
-            with open(self.users_file, 'r') as f:
-                users = json.load(f)
-            return users.get(user_id)
-        except Exception as e:
-            print(f"Error getting user: {e}")
-            return None
-
-    def update_user(self, user_id, update_data):
-        try:
-            with open(self.users_file, 'r') as f:
-                users = json.load(f)
-            
-            if user_id not in users:
-                raise Exception("User not found")
-                
-            users[user_id].update(update_data)
-            users[user_id]['updated_at'] = datetime.utcnow().isoformat()
-            
-            with open(self.users_file, 'w') as f:
-                json.dump(users, f)
-            
-            return users[user_id]
-        except Exception as e:
-            print(f"Error updating user: {e}")
-            raise
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    age = db.Column(db.Integer)
+    location = db.Column(db.String(120))
+    medical_condition = db.Column(db.String(500))
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)

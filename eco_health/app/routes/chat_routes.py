@@ -1,6 +1,6 @@
 # app/routes/chat_routes.py
 from flask import Blueprint, request, jsonify
-from ..routes.user_routes import token_required
+from flask_login import login_required, current_user
 import requests
 import os
 from dotenv import load_dotenv
@@ -14,7 +14,7 @@ API_KEY = os.getenv('AZURE_OPENAI_KEY')
 ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
 
 @chat_routes.route('/api/chat', methods=['POST'])
-@token_required
+@login_required
 def chat(current_user):
     try:
         data = request.get_json()
@@ -37,8 +37,8 @@ def chat(current_user):
                         {
                             "type": "text",
                             "text": f"""You are an AI assistant specialized in environmental health. 
-                            The user has the following medical conditions: {current_user.get('medical_conditions', [])}
-                            Location: {current_user.get('location', 'Unknown')}
+                            The user has the following medical conditions: {current_user.medical_condition}
+                            Location: {current_user.location}
                             Provide personalized advice considering their medical conditions and location."""
                         }
                     ]

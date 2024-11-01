@@ -1,40 +1,57 @@
 # app/__init__.py
-from flask import Flask, g, request
-from flask_cors import CORS
-from dotenv import load_dotenv
-from .routes.user_routes import token_required, get_user_from_token
-import os
-
-load_dotenv()
+from flask import Flask
+from flask_login import LoginManager
+from flask_migrate import Migrate
+from .models.user import db, User
+from .config import Config
+from sqlalchemy import inspect
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    app.config.from_object(Config)
 
-    # Middleware para verificar el usuario actual en cada petición
-    @app.before_request
-    def before_request():
-        g.user = None
-        token = request.cookies.get('token') or request.headers.get('Authorization')
-        if token:
-            if token.startswith('Bearer '):
-                token = token.split(' ')[1]
-            user = get_user_from_token(token)
-            if user:
-                g.user = user
+    # Initialize extensions
+    db.init_app(app)
+    migrate = Migrate(app, db)
+    login_manager = LoginManager()
+    login_manager.login_view = 'user_routes.login'
+    login_manager.init_app(app)
 
-    # Context processor para hacer current_user disponible en todos los templates
-    @app.context_processor
-    def inject_user():
-        return dict(current_user=g.get('user', None))
+    # Define user_loader function
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
-    # Importar y registrar blueprints
+    # Import and register blueprints
     from .routes.user_routes import user_routes
     from .routes.map_routes import map_routes
     from .routes.chat_routes import chat_routes
+    from .routes.main import main
     
     app.register_blueprint(user_routes)
     app.register_blueprint(map_routes)
     app.register_blueprint(chat_routes)
+    app.register_blueprint(main)
 
     return app
+
+def init_db(app):
+    with app.app_context():
+        try:
+            # Create all tables
+            print("Creating all tables...")
+            db.create_all()
+            
+            # Verify the users table exists
+            inspector = inspect(db.engine)
+            tables = inspector.get_table_names()
+            print("Created tables:", tables)
+            
+            if 'users' in tables:
+                print("Users table created successfully!")
+            else:
+                print("Users table was not created!")
+            
+        except Exception as e:
+            print("Error during database initialization:", str(e))
+            raise e

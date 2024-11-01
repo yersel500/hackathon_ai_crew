@@ -7,7 +7,7 @@
 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Registro de Usuario</h2>
     
-    <form id="registerForm" class="space-y-4">
+    <form method="POST" action="{{ url_for('user_routes.register') }}" class="space-y-4">
         <div>
             <label class="block text-gray-700 mb-2">Nombre Completo</label>
             <input type="text" name="name" required
@@ -34,18 +34,83 @@
 
         <div>
             <label class="block text-gray-700 mb-2">Ubicación</label>
-            <input type="text" name="location"
+            <select name="location" required
                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
+                <option value="">Seleccione un estado</option>
+                <option value="AL">Alabama</option>
+                <option value="AK">Alaska</option>
+                <option value="AZ">Arizona</option>
+                <option value="AR">Arkansas</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="CT">Connecticut</option>
+                <option value="DE">Delaware</option>
+                <option value="FL">Florida</option>
+                <option value="GA">Georgia</option>
+                <option value="HI">Hawaii</option>
+                <option value="ID">Idaho</option>
+                <option value="IL">Illinois</option>
+                <option value="IN">Indiana</option>
+                <option value="IA">Iowa</option>
+                <option value="KS">Kansas</option>
+                <option value="KY">Kentucky</option>
+                <option value="LA">Louisiana</option>
+                <option value="ME">Maine</option>
+                <option value="MD">Maryland</option>
+                <option value="MA">Massachusetts</option>
+                <option value="MI">Michigan</option>
+                <option value="MN">Minnesota</option>
+                <option value="MS">Mississippi</option>
+                <option value="MO">Missouri</option>
+                <option value="MT">Montana</option>
+                <option value="NE">Nebraska</option>
+                <option value="NV">Nevada</option>
+                <option value="NH">New Hampshire</option>
+                <option value="NJ">New Jersey</option>
+                <option value="NM">New Mexico</option>
+                <option value="NY">New York</option>
+                <option value="NC">North Carolina</option>
+                <option value="ND">North Dakota</option>
+                <option value="OH">Ohio</option>
+                <option value="OK">Oklahoma</option>
+                <option value="OR">Oregon</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="RI">Rhode Island</option>
+                <option value="SC">South Carolina</option>
+                <option value="SD">South Dakota</option>
+                <option value="TN">Tennessee</option>
+                <option value="TX">Texas</option>
+                <option value="UT">Utah</option>
+                <option value="VT">Vermont</option>
+                <option value="VA">Virginia</option>
+                <option value="WA">Washington</option>
+                <option value="WV">West Virginia</option>
+                <option value="WI">Wisconsin</option>
+                <option value="WY">Wyoming</option>
+            </select>
         </div>
 
         <div>
             <label class="block text-gray-700 mb-2">Condiciones Médicas</label>
-            <select name="medical_conditions" multiple
+            <select name="medical_condition" multiple
                 class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-500">
                 <option value="asthma">Asma</option>
                 <option value="allergies">Alergias</option>
                 <option value="cardiovascular">Problemas Cardiovasculares</option>
                 <option value="respiratory">Problemas Respiratorios</option>
+                <option value="diabetes">Diabetes</option>
+                <option value="chronic_obstructive_pulmonary_disease">Enfermedad Pulmonar Obstructiva Crónica (EPOC)</option>
+                <option value="lung_cancer">Cáncer de Pulmón</option>
+                <option value="stroke">Accidente Cerebrovascular</option>
+                <option value="chronic_bronchitis">Bronquitis Crónica</option>
+                <option value="emphysema">Enfisema</option>
+                <option value="pneumonia">Neumonía</option>
+                <option value="hypertension">Hipertensión</option>
+                <option value="heart_disease">Enfermedad del Corazón</option>
+                <option value="immune_system_disorders">Trastornos del Sistema Inmunológico</option>
+                <option value="pregnancy">Embarazo</option>
+                <option value="children">Niños</option>
+                <option value="elderly">Ancianos</option>
             </select>
             <p class="text-sm text-gray-500 mt-1">Mantén presionado Ctrl para seleccionar múltiples opciones</p>
         </div>
@@ -57,60 +122,7 @@
     </form>
 
     <p class="mt-4 text-center text-gray-600">
-        ¿Ya tienes una cuenta? <a href="/login" class="text-green-600 hover:text-green-700">Inicia Sesión</a>
+        ¿Ya tienes una cuenta? <a href="{{ url_for('user_routes.login') }}"" class="text-green-600 hover:text-green-700">Inicia Sesión</a>
     </p>
 </div>
-
-<script>
-  document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const formData = new FormData(e.target);
-      const medical_conditions = [...formData.getAll('medical_conditions')];
-      
-      const data = {
-          name: formData.get('name'),
-          email: formData.get('email'),
-          password: formData.get('password'),
-          age: parseInt(formData.get('age')),
-          location: formData.get('location'),
-          medical_conditions: medical_conditions
-      };
-  
-      try {
-          const response = await fetch('/api/auth/register', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-          });
-  
-          const result = await response.json();
-  
-          if (response.ok) {
-              // Guardar el token en localStorage
-              localStorage.setItem('token', result.token);
-              
-              // Hacer una petición al perfil para verificar el token
-              const profileResponse = await fetch('/api/user/profile', {
-                  headers: {
-                      'Authorization': `Bearer ${result.token}`
-                  }
-              });
-  
-              if (profileResponse.ok) {
-                  window.location.href = '/profile';
-              } else {
-                  alert('Error al acceder al perfil');
-              }
-          } else {
-              alert(result.error || 'Error en el registro');
-          }
-      } catch (error) {
-          console.error('Error:', error);
-          alert('Error al registrar usuario');
-      }
-  });
-</script>
 {% endblock %}

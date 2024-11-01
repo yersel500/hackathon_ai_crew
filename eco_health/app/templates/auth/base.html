@@ -12,13 +12,13 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="/" class="text-2xl font-bold text-green-600">EcoHealth</a>
             <div>
-                {% if current_user %}
-                    <a href="/map" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
-                    <a href="/profile" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
-                    <button onclick="logout()" class="text-gray-600 hover:text-green-600">Cerrar Sesión</button>
+                {% if current_user.is_authenticated %}
+                    <a href="{{url_for('map_routes.show_map')}}" class="text-gray-600 hover:text-green-600 mr-4">Mapa</a>
+                    <a href="{{ url_for('main.profile') }}" class="text-gray-600 hover:text-green-600 mr-4">Perfil</a>
+                    <a href="{{ url_for('user_routes.logout') }}" class="text-gray-600 hover:text-green-600 mr-4">Logout</a>
                 {% else %}
-                    <a href="/login" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
-                    <a href="/register" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
+                    <a href="{{ url_for('user_routes.login') }}" class="text-gray-600 hover:text-green-600 mr-4">Iniciar Sesión</a>
+                    <a href="{{ url_for('user_routes.register') }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Registrarse</a>
                 {% endif %}
             </div>
         </div>
@@ -77,53 +77,6 @@
 
     <!-- Script global para manejo de sesión -->
     <script>
-        async function logout() {
-            try {
-                await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-                localStorage.removeItem('token');
-                window.location.href = '/login';
-            } catch (error) {
-                console.error('Error during logout:', error);
-            }
-        }
-  
-      // Verificar token en cada página
-    //   document.addEventListener('DOMContentLoaded', async () => {
-    //       const token = localStorage.getItem('token');
-    //       const protectedPaths = ['/profile', '/map'];
-    //       const currentPath = window.location.pathname;
-  
-    //       if (protectedPaths.includes(currentPath) && !token) {
-    //           // Redirigir a login si no hay token en páginas protegidas
-    //           window.location.href = '/login';
-    //           return;
-    //       }
-  
-    //       if (token) {
-    //           try {
-    //               // Verificar si el token es válido
-    //               const response = await fetch('/api/user/profile', {
-    //                   headers: {
-    //                       'Authorization': `Bearer ${token}`
-    //                   }
-    //               });
-  
-    //               if (!response.ok) {
-    //                   // Si el token no es válido, limpiar y redirigir
-    //                   localStorage.removeItem('token');
-    //                   if (protectedPaths.includes(currentPath)) {
-    //                       window.location.href = '/login';
-    //                   }
-    //               }
-    //           } catch (error) {
-    //               console.error('Error verificando token:', error);
-    //           }
-    //       }
-    //   });
-
     document.addEventListener('DOMContentLoaded', function() {
         const chatToggle = document.getElementById('chat-toggle');
         const chatWindow = document.getElementById('chat-window');
@@ -155,17 +108,10 @@
             chatInput.value = '';
 
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    addMessage('Por favor, inicia sesión para continuar.', false);
-                    return;
-                }
-
                 const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ message })
                 });
