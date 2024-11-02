@@ -57,7 +57,7 @@ EcoHealth es una plataforma innovadora que integra datos de calidad del aire en 
 - **Base de Datos**: PostgreSQL
 - **IA & ML**: Azure OpenAI, Azure Document Intelligence
 - **Seguridad**: Fernet Encryption
-- **APIs**: Azure Maps, EPA AirNow
+- **APIs**: EPA AirNow
 
 ## 📌 Requisitos del Sistema
 ```python
