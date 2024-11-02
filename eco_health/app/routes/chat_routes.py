@@ -84,6 +84,7 @@ def chat():
                             - When to seek medical attention
                             3. Explain briefly how the current air quality might affect their specific conditions
                             4. Suggest preventive measures relevant to their medical profile
+                            5. If the user ask for information of their documents, please provide a detailed information of documents_context
 
                             Keep responses concise, practical, and focused on the user's specific health conditions and current air quality situation."""
 
