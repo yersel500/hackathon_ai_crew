@@ -3,6 +3,10 @@
 ## 🌟 Acerca de EcoHealth
 EcoHealth es una plataforma innovadora que integra datos de calidad del aire en tiempo real con tu perfil médico personal para proporcionarte recomendaciones personalizadas y proteger tu salud. Utilizando inteligencia artificial avanzada, EcoHealth analiza múltiples factores para ofrecerte alertas y consejos adaptados a tus condiciones médicas específicas.
 
+## Video del Demo
+
+https://github.com/user-attachments/assets/32ce32ce-f737-4e2a-8290-cd71510ec080
+
 ## ⭐ Arquitectura del Proyecto
 
 - Azure OpenAI
